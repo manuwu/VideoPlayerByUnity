@@ -21,6 +21,8 @@ namespace CCS
         public const string LobbyPanel = "LobbyPanel";
         public const string ControlPanel = "ControlPanel";
         public const string VideoPlayPanel = "VideoPlayPanel";
+        public const string ChooseServePanel = "ChooseServePanel";
+
     }
 
     public class PanelManager : Manager

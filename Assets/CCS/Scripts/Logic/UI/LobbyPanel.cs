@@ -227,21 +227,29 @@ public class LobbyPanel : PanelBase {
 
     void SetVideoItemData(GameObject obj ,JSONNode json)
     {
-        Debug.Log(json);
-        JSONNode icon = json["Icon"];
-        NetManager.HttpDownImageReq((icon["Uri"].ToString()).Trim('"'), obj.transform.Find("icon").GetComponent<RawImage>());
-        obj.transform.Find("name").GetComponent<Text>().text = (json["Name"].ToString()).Trim('"');
-        obj.GetComponent<Toggle>().onValueChanged.AddListener((bool isOn)=>{
-            if (isOn)
-            {
-                currentChooseVideoId = (int.Parse(json["Id"]));
-                currentChooseVideoUrl = json["Uri"].ToString().Trim('"');
-                //obj.transform.Find("mark").gameObject.SetActive(true);
-                if (currentChooseItem != null&&currentChooseItem!= obj.GetComponent<Toggle>())
-                    currentChooseItem.isOn = false;
-                currentChooseItem = obj.GetComponent<Toggle>();
-            }
-        });
+        try
+        {
+            Debug.Log(json);
+            JSONNode icon = json["Icon"];
+            if (icon["Uri"] != null)
+                NetManager.HttpDownImageReq((icon["Uri"].ToString()).Trim('"'), obj.transform.Find("icon").GetComponent<RawImage>());
+            obj.transform.Find("name").GetComponent<Text>().text = (json["Name"].ToString()).Trim('"');
+            obj.GetComponent<Toggle>().onValueChanged.AddListener((bool isOn) => {
+                if (isOn)
+                {
+                    currentChooseVideoId = (int.Parse(json["Id"]));
+                    currentChooseVideoUrl = json["Uri"].ToString().Trim('"');
+                    //obj.transform.Find("mark").gameObject.SetActive(true);
+                    if (currentChooseItem != null && currentChooseItem != obj.GetComponent<Toggle>())
+                        currentChooseItem.isOn = false;
+                    currentChooseItem = obj.GetComponent<Toggle>();
+                }
+            });
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
     }
 
     void StatusEvent(string msg)

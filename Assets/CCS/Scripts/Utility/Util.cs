@@ -396,7 +396,7 @@ namespace CCS
                     if (Application.platform == RuntimePlatform.Android)
                     {
                         //return Application.persistentDataPath + AppConst.dirSep + game + AppConst.dirSep;
-                        return Application.dataPath + "!assets/";
+                        return "jar:file://" + Application.dataPath + "!assets/";
                     }
                     else
                     {
@@ -418,8 +418,7 @@ namespace CCS
                     //return Application.persistentDataPath + AppConst.dirSep + game + AppConst.dirSep;
                     return Application.streamingAssetsPath + AppConst.dirSep;
                 }
-                return  Application.streamingAssetsPath+AppConst.dirSep;
-                
+                return Application.streamingAssetsPath + AppConst.dirSep;
             }
         }
 
@@ -433,5 +432,34 @@ namespace CCS
                 return "file://" + Application.streamingAssetsPath + AppConst.dirSep;
         }
 
+
+        /// <summary>
+        /// 应用程序内容路径
+        /// </summary>
+        public static string AppContentPath()
+        {
+            string path = string.Empty;
+            string game = AppConst.AppName.ToLower();
+
+            switch (Application.platform)
+            {
+                case RuntimePlatform.Android:
+                    //path = "jar:file://" + Application.dataPath + "!/assets/";
+                    path= Application.persistentDataPath + AppConst.dirSep + game + AppConst.dirSep;
+
+                    break;
+                case RuntimePlatform.IPhonePlayer:
+                    path = Application.dataPath + "/Raw/";
+                    break;
+                //case RuntimePlatform.WindowsPlayer:
+
+                //    path= Application.persistentDataPath + AppConst.dirSep + game + AppConst.dirSep;
+                //    break;
+                default:
+                    path= "c:/" + game + AppConst.dirSep;
+                    break;
+            }
+            return path;
+        }
     }
 }

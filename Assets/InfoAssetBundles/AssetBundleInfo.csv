@@ -3,4 +3,5 @@ controlrootatlas.unity3d,*.png,Assets/CCS/BuildResource/PlatformRoot/ControlRoot
 controlpanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlPanel
 lobbypanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/LobbyPanel
 videoplaypanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/VideoPlayPanel
+chooseservepanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ChooseServePanel
 systemui.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/SystemUI

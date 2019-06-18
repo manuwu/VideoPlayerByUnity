@@ -82,12 +82,18 @@ namespace CCS {
         #region Unity Events
         void Start()
         {
-            _webData = new WebData();
-            _webData.OpenWebSocket();
-            InvokeRepeating("UpdateMsg", 0.5f,0.02f);
+            //_webData = new WebData();
+            //_webData.OpenWebSocket();
+            //InvokeRepeating("UpdateMsg", 0.5f,0.02f);
             //tempTexture = new Texture2D(4, 4, TextureFormat.DXT1, false);
         }
 
+        public void InitNet()
+        {
+            _webData = new WebData();
+            _webData.OpenWebSocket();
+            InvokeRepeating("UpdateMsg", 0.5f, 0.02f);
+        }
 
         void UpdateMsg()
         {
@@ -215,7 +221,6 @@ namespace CCS {
         {
             if (img != null)
             {
-                GameLogger.Log("666666666" + url);
                 WWW www = new WWW(url);
                 www.threadPriority = UnityEngine.ThreadPriority.High;
                 yield return www;

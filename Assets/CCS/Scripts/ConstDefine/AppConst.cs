@@ -24,8 +24,9 @@ namespace CCS
         //public const string IP = "http://223.87.179.82:1555/";
         //public const string WebSocketAdd = "ws://223.87.179.82:1555/ccweb/ws/join?sn=admin001";
         //隋彪
-        public const string WebSocketAdd = "ws://192.168.1.254:8080/ccweb/ws/join?sn=admin001";
-        public const string IP = "http://192.168.1.254:8080/";
+        public static string WebSocketAdd = "ws://{0}/ccweb/ws/join?sn=admin001";
+        public static string IP = "http://{0}/";
+        public static string Port = string.Empty;
 
         //统一路径符
         public static string dirSep = "/";
