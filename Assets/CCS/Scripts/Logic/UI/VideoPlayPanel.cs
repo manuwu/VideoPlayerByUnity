@@ -13,7 +13,7 @@ public class VideoPlayPanel : PanelBase
     private Button backBtn;
     private Button playBtn;
     private Button pauseBtn;
-    private Button restartBtn;
+    private Toggle restartBtn;
     private Slider videoSeekSlider;
     private Text currentTimeTxt;
     private Text totalTimeTxt;
@@ -43,7 +43,7 @@ public class VideoPlayPanel : PanelBase
         backBtn = skin.transform.Find("BtnRoot/backBtn").GetComponent<Button>();
         playBtn = skin.transform.Find("BtnRoot/PlayButton").GetComponent<Button>();
         pauseBtn = skin.transform.Find("BtnRoot/PauseButton").GetComponent<Button>();
-        restartBtn = skin.transform.Find("BtnRoot/resartBtn").GetComponent<Button>();
+        restartBtn = skin.transform.Find("BtnRoot/resartBtn").GetComponent<Toggle>();
         currentTimeTxt = skin.transform.Find("BtnRoot/currentTime").GetComponent<Text>();
         totalTimeTxt = skin.transform.Find("BtnRoot/totalTime").GetComponent<Text>();
         videoSeekSlider = skin.transform.Find("BtnRoot/VideoSeekSlider").GetComponent<Slider>();
@@ -63,7 +63,7 @@ public class VideoPlayPanel : PanelBase
         backBtn.onClick.AddListener(OnClickBack);
         playBtn.onClick.AddListener(OnPlayButton);
         pauseBtn.onClick.AddListener(OnPauseButton);
-        restartBtn.onClick.AddListener(OnRestartButton);
+        restartBtn.onValueChanged.AddListener(OnRestartButton);
         //videoSeekSlider.onValueChanged.AddListener(OnVideoSeekSlider);
 
     }
@@ -122,9 +122,24 @@ public class VideoPlayPanel : PanelBase
         NetManager.SendMessage(Util.ObjectToJson(msg));
     }
 
-    void OnRestartButton()
+    void OnRestartButton(bool isOn)
     {
-
+        if (isOn)
+        {
+            mediaPlayer.Loop = true;
+            AdminMessage msg = new AdminMessage();
+            msg.Type = DataType.AdminEvent;
+            msg.Data.Control = ControlState.Loop;
+            NetManager.SendMessage(Util.ObjectToJson(msg));
+        }
+        else
+        {
+            mediaPlayer.Loop = false;
+            AdminMessage msg = new AdminMessage();
+            msg.Type = DataType.AdminEvent;
+            msg.Data.Control = ControlState.NoLoop;
+            NetManager.SendMessage(Util.ObjectToJson(msg));
+        }
     }
 
     // 调节音量

@@ -13,6 +13,7 @@ public class LobbyPanel : PanelBase {
     private Toggle homeTog;
     private Toggle editTog;
     private DataGrid videoDG;
+    private DataGrid tagsDG;
     private  GameObject toggleTemp;
     private GameObject pageVideoTemp;
     private Transform toggleParent;
@@ -29,17 +30,19 @@ public class LobbyPanel : PanelBase {
 
     //Datas
     Dictionary<int, GameObject> toggleData;
-    Dictionary<int, GameObject> videoPageDate;
+    //Dictionary<int, GameObject> videoPageDate;
     private int redCount;
     private int greenCount;
     private int yellowCount;
     private string currentChooseVideoUrl;
     private int currentChooseVideoId;
+    private int currentChooseFileType;
+    private int currentChooseMenuId;
     private JSONNode currentChooseVideo;
     private void Awake()
     {
         toggleData = new Dictionary<int, GameObject>();
-        videoPageDate = new Dictionary<int, GameObject>();
+        //videoPageDate = new Dictionary<int, GameObject>();
     }
 
     public override void Init(params object[] args)
@@ -59,6 +62,8 @@ public class LobbyPanel : PanelBase {
         editTog = skinTrans.Find("rightRoot/toggleGroup/toggleEdit").GetComponent<Toggle>();
 
         videoRoot = skinTrans.Find("videoListRoot").gameObject;
+        tagsDG = videoRoot.transform.Find("topRoot/toggleGroup").GetComponent<DataGrid>();
+        videoDG= videoRoot.transform.Find("videoPageRoot/videoPagetemp/contenView").GetComponent<DataGrid>();
         toggleParent = skinTrans.Find("videoListRoot/leftRoot/toggleGroup/Viewport/Content");
         toggleTemp = toggleParent.Find("toggleItem").gameObject;
         videoParent = skinTrans.Find("videoListRoot/videoPageRoot");
@@ -93,6 +98,7 @@ public class LobbyPanel : PanelBase {
         msg.Data.Control = ControlState.Play;
         msg.Data.Resource.Id = currentChooseVideoId;
         msg.Data.Resource.Uri = currentChooseVideoUrl;
+        msg.Data.Resource.FileType.Id = currentChooseFileType;
         NetManager.SendMessage(Util.ObjectToJson(msg));
         PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, currentChooseVideoUrl);
         currentChooseItem.isOn = false;
@@ -138,6 +144,7 @@ public class LobbyPanel : PanelBase {
         NetMsgHandler.AddListener(NetMessageConst.StatusEvent, StatusEvent);
         NetMsgHandler.AddListener(NetMessageConst.UpdateAllDeviceInfo, UpdateAllDeviceInfo);
         GetToggleListReq();
+        GetDevicesListReq();
     }
 
     public override void RemoveEvent()
@@ -189,29 +196,76 @@ public class LobbyPanel : PanelBase {
 
     void SetVideoSubPage(int id)
     {
-        if (!videoPageDate.ContainsKey(id))
-        {
-            GameObject obj = GameObject.Instantiate(pageVideoTemp);
-            obj.transform.SetParent(videoParent,false);
-            obj.transform.localScale = Vector3.one;
-            obj.SetActive(true);
-            videoDG = obj.transform.Find("contenView").GetComponent<DataGrid>();
-            videoPageDate.Add(id, obj);
-            NetManager.HttpGetReq(string.Format("{0}{1}{2}", AppConst.IP, NetMessageConst.GetVideoListByMenu,id), SetVideoItem);
-        }
+        //if (!videoPageDate.ContainsKey(id))
+        //{
+        //    GameObject obj = GameObject.Instantiate(pageVideoTemp);
+        //    obj.transform.SetParent(videoParent,false);
+        //    obj.transform.localScale = Vector3.one;
+        //    obj.SetActive(true);
+        //    videoDG = obj.transform.Find("contenView").GetComponent<DataGrid>();
+        //    videoPageDate.Add(id, obj);
+        //    NetManager.HttpGetReq(string.Format("{0}{1}{2}", AppConst.IP, NetMessageConst.GetVideoListByMenu,id), SetVideoItem);
+        //}
 
-        foreach (var item in videoPageDate)
+        //foreach (var item in videoPageDate)
+        //{
+        //    if (item.Key == id)
+        //        item.Value.SetActive(true);
+        //    else
+        //        item.Value.SetActive(false);
+        //}
+        GetTagsListByToggleReq(id);
+    }
+
+    void GetTagsListByToggleReq(int toggleID)
+    {
+        currentChooseMenuId = toggleID;
+        string url = string.Format("{0}{1}{2}", AppConst.IP, NetMessageConst.GetTagsListByToggle, toggleID);
+        NetManager.HttpGetReq(url, GetTagsListByToggleResp);
+    }
+
+    void GetTagsListByToggleResp(string msg)
+    {
+        JSONNode jsonNode = JSON.Parse(msg);
+        Debug.Log("88888888888888");
+        Debug.Log(jsonNode);
+        //tagsDG.Destroy();
+        tagsDG.MaxLength = jsonNode.Count;
+        ItemRender[] dgirs = tagsDG.getItemRenders();
+        for (int i = 0; i < dgirs.Length; i++)
         {
-            if (item.Key == id)
-                item.Value.SetActive(true);
-            else
-                item.Value.SetActive(false);
+            dgirs[i].AddItemSetDataFunc((int index) =>
+            {
+                SetTagsItem(dgirs[i].gameObj,i, jsonNode[index]);
+            });
+            int idx = dgirs[i].m_renderData;
+            SetTagsItem(dgirs[i].gameObj, i,jsonNode[idx]);
+        }
+    }
+
+    void  SetTagsItem(GameObject go, int index, JSONNode msg)
+    {
+        go.transform.Find("Background/Text").GetComponent<Text>().text = msg["Name"];
+        go.GetComponent<Toggle>().onValueChanged.AddListener((bool isOn) =>
+        {
+            if(isOn)
+                NetManager.HttpGetReq(string.Format("{0}{1}", AppConst.IP, string.Format( NetMessageConst.GetVideoListByMenuTag, currentChooseMenuId, (msg["Id"].ToString()).Trim('"'))), SetVideoItem);
+
+        });
+        if (index == 0)
+        {
+            NetManager.HttpGetReq(string.Format("{0}{1}", AppConst.IP, string.Format(NetMessageConst.GetVideoListByMenuTag, currentChooseMenuId, (msg["Id"].ToString()).Trim('"'))), SetVideoItem);
+            go.GetComponent<Toggle>().isOn = true;
         }
     }
 
     void SetVideoItem(string msg)
     {
+
         JSONNode jsonNode = JSON.Parse(msg);
+        Debug.Log("rrrrrrrrrrrrrrrrrrrrrrrr");
+        Debug.Log(jsonNode);
+        videoDG.Destroy();
         videoDG.MaxLength = jsonNode.Count;
         ItemRender[] dgirs = videoDG.getItemRenders();
         for (int i = 0; i < dgirs.Length; i++)
@@ -239,6 +293,7 @@ public class LobbyPanel : PanelBase {
                 {
                     currentChooseVideoId = (int.Parse(json["Id"]));
                     currentChooseVideoUrl = json["Uri"].ToString().Trim('"');
+                    currentChooseFileType= (int.Parse(json["FileType"]["Id"]));
                     //obj.transform.Find("mark").gameObject.SetActive(true);
                     if (currentChooseItem != null && currentChooseItem != obj.GetComponent<Toggle>())
                         currentChooseItem.isOn = false;
@@ -281,6 +336,18 @@ public class LobbyPanel : PanelBase {
         redNum.text = redCount.ToString();
         yellowNumt.text = yellowCount.ToString();
         FrameMsgHandler.SendMsg(NetMessageConst.UpdateOnlineDeviceInfo, userEvents);
+    }
+
+    void GetDevicesListReq()
+    {
+        string url = string.Format("{0}{1}", AppConst.IP, NetMessageConst.GetDevicesInfoList);
+        NetManager.HttpGetReq(url, GetDevicesListResp);
+    }
+
+    void GetDevicesListResp(string msg)
+    {
+        JSONNode devicesData = JSON.Parse(msg);
+        UpdateAllDeviceInfo(devicesData.Count.ToString());
     }
 
     void UpdateAllDeviceInfo(string msg)

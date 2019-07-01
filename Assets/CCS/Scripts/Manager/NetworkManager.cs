@@ -228,7 +228,8 @@ namespace CCS {
                 {
                     Texture2D tempTexture = new Texture2D(4, 4, TextureFormat.DXT1, false);
                     www.LoadImageIntoTexture(tempTexture);
-                    img.texture = tempTexture;
+                    if(img!=null)
+                        img.texture = tempTexture;
                     tempTexture = null;
                 }
             }

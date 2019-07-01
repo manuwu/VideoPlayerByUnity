@@ -11,11 +11,12 @@ public class ControlPanel : PanelBase {
     //Trans
     private Button poweOffBtn;
     private Button restartBtn;
+    private Toggle currentChooseToggleSameScene;
     //Datas
     private DataGrid devicesDG;
     private Dictionary<string, Transform> diviceItemList = new Dictionary<string, Transform>();
     private JSONNode devicesData;
-
+    static string currentChooseSeinum;
     public override void Init(params object[] args)
     {
         base.Init(args);
@@ -63,7 +64,7 @@ public class ControlPanel : PanelBase {
     {
         AdminMessage msg = new AdminMessage();
         msg.Type = DataType.AdminEvent;
-        msg.Data.Control = ControlState.Reboot;
+        msg.Data.Control = ControlState.TurnOff;
         NetManager.SendMessage(Util.ObjectToJson(msg));
     }
 
@@ -71,7 +72,7 @@ public class ControlPanel : PanelBase {
     {
         AdminMessage msg = new AdminMessage();
         msg.Type = DataType.AdminEvent;
-        msg.Data.Control = ControlState.TurnOff;
+        msg.Data.Control = ControlState.Reboot;
         NetManager.SendMessage(Util.ObjectToJson(msg));
     }
 
@@ -106,10 +107,29 @@ public class ControlPanel : PanelBase {
 
         string seriaNum = (json["SerialNumber"].ToString()).Trim('"');
         obj.transform.Find("id").GetComponent<Text>().text = seriaNum;
-        obj.transform.Find("sameBtn").GetComponent<Button>().onClick.AddListener(()=> {
-            GetSameScreenReq(seriaNum);
-        });
+
         diviceItemList[seriaNum] =obj.transform;
+        if(!string.IsNullOrEmpty(currentChooseSeinum)&&currentChooseSeinum==seriaNum)
+        {
+            currentChooseToggleSameScene = obj.transform.Find("sameBtn").GetComponent<Toggle>();
+            currentChooseToggleSameScene.isOn = true;
+            currentChooseToggleSameScene.interactable = false;
+        }
+        obj.transform.Find("sameBtn").GetComponent<Toggle>().onValueChanged.AddListener((bool isOn) => {
+            if (isOn)
+            {
+                GetSameScreenReq(seriaNum);
+                if (currentChooseToggleSameScene != null)
+                {
+                    currentChooseToggleSameScene.isOn = false;
+                    currentChooseToggleSameScene.interactable = true;
+                }
+                currentChooseToggleSameScene = obj.transform.Find("sameBtn").GetComponent<Toggle>();
+                currentChooseToggleSameScene.interactable = false;
+                currentChooseSeinum = seriaNum;
+            }
+        });
+
     }
 
     void GetSameScreenReq(string devNum)
