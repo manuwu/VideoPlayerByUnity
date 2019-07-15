@@ -25,5 +25,13 @@ namespace CCS
 #endif
             AppFacade.Instance.StartUp();
         }
+
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Screen.fullScreen = false;  //退出全屏         
+            }
+        }
     }
 }

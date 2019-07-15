@@ -263,7 +263,6 @@ public class LobbyPanel : PanelBase {
     {
 
         JSONNode jsonNode = JSON.Parse(msg);
-        Debug.Log("rrrrrrrrrrrrrrrrrrrrrrrr");
         Debug.Log(jsonNode);
         videoDG.Destroy();
         videoDG.MaxLength = jsonNode.Count;
@@ -327,9 +326,9 @@ public class LobbyPanel : PanelBase {
             int powerNum = int.Parse(userEvents[i]["PowerState"]);
             if (powerNum < 33)
                 redCount++;
-            else if (powerNum > 33 && powerNum < 66)
+            else if (powerNum >= 33 && powerNum < 66)
                 yellowCount++;
-            else if (powerNum > 66)
+            else if (powerNum >=66)
                 greenCount++;
         }
         greenNum.text = greenCount.ToString();
