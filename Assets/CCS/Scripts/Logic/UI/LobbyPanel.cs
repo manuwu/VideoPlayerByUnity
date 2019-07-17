@@ -96,6 +96,7 @@ public class LobbyPanel : PanelBase {
         AdminMessage msg = new AdminMessage();
         msg.Type = DataType.AdminEvent;
         msg.Data.Control = ControlState.Play;
+        msg.Data.Progress = 0;
         msg.Data.Resource.Id = currentChooseVideoId;
         msg.Data.Resource.Uri = currentChooseVideoUrl;
         msg.Data.Resource.FileType.Id = currentChooseFileType;

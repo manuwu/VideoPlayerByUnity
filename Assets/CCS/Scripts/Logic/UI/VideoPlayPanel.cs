@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UMP;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
@@ -20,6 +21,8 @@ public class VideoPlayPanel : PanelBase
     private UniversalMediaPlayer mediaPlayer;
     private Transform videoCameraTran;
     private Transform videoPLayerRoot;
+    private bool IsVoluntary;
+    private bool isLoop;
     //Data
     private Quaternion cameraRow;
     public override void Init(params object[] args)
@@ -47,12 +50,15 @@ public class VideoPlayPanel : PanelBase
         currentTimeTxt = skin.transform.Find("BtnRoot/currentTime").GetComponent<Text>();
         totalTimeTxt = skin.transform.Find("BtnRoot/totalTime").GetComponent<Text>();
         videoSeekSlider = skin.transform.Find("BtnRoot/VideoSeekSlider").GetComponent<Slider>();
+        IsVoluntary = false;
+        isLoop = false;
         AddUIEvent();
         InvokeRepeating("UpdateProcess",1f,1f);
     }
 
     void UpdateProcess()
     {
+        IsVoluntary = true;
         totalTimeTxt.text = Util.MillisecondToData(mediaPlayer.Length);
         currentTimeTxt.text = Util.MillisecondToData(mediaPlayer.Time);
         videoSeekSlider.value = mediaPlayer.Position;
@@ -64,8 +70,8 @@ public class VideoPlayPanel : PanelBase
         playBtn.onClick.AddListener(OnPlayButton);
         pauseBtn.onClick.AddListener(OnPauseButton);
         restartBtn.onValueChanged.AddListener(OnRestartButton);
-        //videoSeekSlider.onValueChanged.AddListener(OnVideoSeekSlider);
-
+        videoSeekSlider.onValueChanged.AddListener(OnVideoSeekSliderOnVideoSeekSlider);
+        mediaPlayer.AddEndReachedEvent(OnPLlayerEnd);
     }
 
     public override void AddEvent()
@@ -103,7 +109,8 @@ public class VideoPlayPanel : PanelBase
         playBtn.gameObject.SetActive(false);
         AdminMessage msg = new AdminMessage();
         msg.Type = DataType.AdminEvent;
-        msg.Data.Control = ControlState.Resume;
+        msg.Data.Progress = mediaPlayer.Time;
+        msg.Data.Control = ControlState.Play;
         NetManager.SendMessage(Util.ObjectToJson(msg));
     }
 
@@ -126,6 +133,7 @@ public class VideoPlayPanel : PanelBase
     {
         if (isOn)
         {
+            isLoop = true;
             mediaPlayer.Loop = true;
             AdminMessage msg = new AdminMessage();
             msg.Type = DataType.AdminEvent;
@@ -134,6 +142,7 @@ public class VideoPlayPanel : PanelBase
         }
         else
         {
+            isLoop = false;
             mediaPlayer.Loop = false;
             AdminMessage msg = new AdminMessage();
             msg.Type = DataType.AdminEvent;
@@ -161,12 +170,20 @@ public class VideoPlayPanel : PanelBase
     }
 
     // 拖动进度
-    private void OnVideoSeekSlider(float point)
+    private void OnVideoSeekSliderOnVideoSeekSlider(float point)
     {
-        //if (mediaPlayer )
-        //{
-        //    mediaPlayer.Position=videoSeekSlider.value;
-        //}
+        if (IsVoluntary)
+        {
+            IsVoluntary = false;
+            return;
+        }
+
+        mediaPlayer.Position = videoSeekSlider.value;
+        AdminMessage msg = new AdminMessage();
+        msg.Type = DataType.AdminEvent;
+        msg.Data.Control = ControlState.Play;
+        msg.Data.Progress = mediaPlayer.Time;
+        NetManager.SendMessage(Util.ObjectToJson(msg));
     }
 
     void UpdateCameraRotation(string msg)
@@ -177,5 +194,11 @@ public class VideoPlayPanel : PanelBase
         cameraRow.z = float.Parse(json["Z"]);
         cameraRow.w = float.Parse(json["W"]);
         videoCameraTran.rotation = Quaternion.Lerp(videoCameraTran.rotation,cameraRow, 10f * Time.deltaTime);
+    }
+
+    void  OnPLlayerEnd()
+    {
+        if (!isLoop)
+            OnClickBack();
     }
 }

@@ -21,6 +21,7 @@ namespace CCS {
     public struct AdminEvent
     {
         public ControlState Control;
+        public long Progress;
         public ResourceInfo Resource;
     }
 
