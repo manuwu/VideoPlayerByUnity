@@ -1,5 +1,6 @@
 signatlas.unity3d,*.png,Assets/CCS/BuildResource/CommonSignAtlas
 controlrootatlas.unity3d,*.png,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas
+bg.unity3d,*.png,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/Bg
 controlpanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlPanel
 lobbypanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/LobbyPanel
 videoplaypanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/VideoPlayPanel

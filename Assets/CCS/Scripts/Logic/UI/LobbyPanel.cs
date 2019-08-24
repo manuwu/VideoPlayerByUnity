@@ -38,6 +38,7 @@ public class LobbyPanel : PanelBase {
     private int currentChooseVideoId;
     private int currentChooseFileType;
     private int currentChooseMenuId;
+    private string currentChooseMd5;
     private JSONNode currentChooseVideo;
     private void Awake()
     {
@@ -100,6 +101,7 @@ public class LobbyPanel : PanelBase {
         msg.Data.Resource.Id = currentChooseVideoId;
         msg.Data.Resource.Uri = currentChooseVideoUrl;
         msg.Data.Resource.FileType.Id = currentChooseFileType;
+        msg.Data.Resource.Md5 = currentChooseMd5;
         NetManager.SendMessage(Util.ObjectToJson(msg));
         PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, currentChooseVideoUrl);
         currentChooseItem.isOn = false;
@@ -294,6 +296,7 @@ public class LobbyPanel : PanelBase {
                     currentChooseVideoId = (int.Parse(json["Id"]));
                     currentChooseVideoUrl = json["Uri"].ToString().Trim('"');
                     currentChooseFileType= (int.Parse(json["FileType"]["Id"]));
+                    currentChooseMd5 = json["Md5"].ToString().Trim('"');
                     //obj.transform.Find("mark").gameObject.SetActive(true);
                     if (currentChooseItem != null && currentChooseItem != obj.GetComponent<Toggle>())
                         currentChooseItem.isOn = false;
