@@ -20,12 +20,9 @@ namespace CCS
         public const bool DebugMode = false;
 #endif
         public const string LuaTempDir = "Lua/";                    //临时目录
-
-        //public const string IP = "http://223.87.179.82:1555/";
-        //public const string WebSocketAdd = "ws://223.87.179.82:1555/ccweb/ws/join?sn=admin001";
-        //隋彪
-        public static string WebSocketAdd = "ws://{0}/ccweb/ws/join?sn=admin001";
-        public static string IP = "http://{0}/";
+        
+        public static string WebSocketAdd = "ws://{0}/ccweb/ws/join?sn=admin{1}";
+        public static string IP = "http://{0}";
         public static string Port = string.Empty;
 
         //统一路径符

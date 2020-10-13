@@ -22,6 +22,9 @@ namespace CCS
         public const string ControlPanel = "ControlPanel";
         public const string VideoPlayPanel = "VideoPlayPanel";
         public const string ChooseServePanel = "ChooseServePanel";
+        public const string ChooseDevicePanel = "ChooseDevicePanel";
+        public const string ChooseSameSceneDevicePanel = "ChooseSameSceneDevicePanel";
+        public const string ImagePlayPanel = "ImagePlayPanel";
 
     }
 
@@ -32,6 +35,7 @@ namespace CCS
         private Transform Toast;
         private Text toastTxt;
         private Transform Layer3;
+        private GameObject loading;
         public Transform GlobalUIRoot;
         //Data
         public Dictionary<string, PanelBase> dict;
@@ -39,13 +43,13 @@ namespace CCS
         private Dictionary<string,GameObject> uiRes;
         private void Awake()
         {
-
             dict = new Dictionary<string, PanelBase>();
             uiRes = new Dictionary<string, GameObject>();
             //InitLayer();
             Canvas = GameObject.FindGameObjectWithTag("Canvas").transform;
             Toast = Canvas.Find("Toast");
             Layer3 = Canvas.Find("Layer3");
+            loading = Canvas.Find("Loading").gameObject;
             GlobalUIRoot = Canvas.parent;
         }
 
@@ -67,7 +71,7 @@ namespace CCS
 
         public void SetLayer(Transform trans, PanelLayer layer)
         {
-            trans.SetParent(GetLayer(layer), false);
+            trans.SetParent(GetLayer(layer),false);
         }
 
         private Transform GetLayer(PanelLayer layer)
@@ -185,6 +189,16 @@ namespace CCS
         {
             Toast.gameObject.SetActive(false);
             Toast.localPosition = Vector3.zero;
+        }
+
+        public void ShowLoading()
+        {
+            loading.SetActive(true);
+        }
+
+        public void HideLoading()
+        {
+            loading.SetActive(false);
         }
     }
 }

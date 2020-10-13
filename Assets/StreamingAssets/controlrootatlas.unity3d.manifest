@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1753564359
+CRC: 1307358396
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5f971c8a808092d9506446467ad4eeb3
+    Hash: 1ebcefaeed9f5caa573047cf7a79d717
   TypeTreeHash:
     serializedVersion: 2
     Hash: 460b4f5d62b6facbccf7c01637df8f00
@@ -15,12 +15,14 @@ ClassTypes:
   Script: {instanceID: 0}
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/logo.png
+- Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/MobileLogo.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/bnt_bj2.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/off.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/resource_selected.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/bnt_bj.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/play.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/restart.png
+- Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/loading03-000.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/duankai.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/stop.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/vr.png
@@ -30,6 +32,7 @@ Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/power.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/localPlay.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/dianchi.png
+- Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/close_btn.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/back.png
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlRootAtlas/quit.png
 Dependencies: []

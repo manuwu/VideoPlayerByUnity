@@ -5,4 +5,7 @@ controlpanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/
 lobbypanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/LobbyPanel
 videoplaypanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/VideoPlayPanel
 chooseservepanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ChooseServePanel
+chooseDevicePanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ChooseDevicePanel
+chooseSameSceneDevicePanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ChooseSameSceneDevicePanel
+imagePlayPanel.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ImagePlayPanel
 systemui.unity3d,*.prefab,Assets/CCS/BuildResource/PlatformRoot/SystemUI

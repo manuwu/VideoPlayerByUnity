@@ -14,8 +14,8 @@ public class DataGrid : MonoBehaviour
     public int maxLength = 100;
     public bool useLoopItems = true;           //是否使用无限循环列表，对于列表项中OnDataSet方法执行消耗较大时不宜使用，因为OnDataSet方法会在滚动的时候频繁调用
     public GameObject ItemCell;
-    public bool useClickEvent = true;           //列表项是否监听点击事件
-    public bool autoSelectFirst = true;         //创建时是否自动选中第一个对象
+    public bool useClickEvent = false;           //列表项是否监听点击事件
+    public bool autoSelectFirst = false;         //创建时是否自动选中第一个对象
     private Action<int> onItemSelectedFunc = null;
     public void AddOnItemSelectedFunc(Action<int> callBack)
     {

@@ -32,6 +32,7 @@ public class AppFacade : Facade
         AppFacade.Instance.AddManager<ResourceManager>(ManagerName.Resource);
         AppFacade.Instance.AddManager<GameManager>(ManagerName.Game);
         AppFacade.Instance.AddManager<PanelManager>(ManagerName.Panel);
+        AppFacade.Instance.AddManager<PlayerManager>(ManagerName.PLayer);
 #if DEBUG_TEST
         AppFacade.Instance.AddManager<ShowFPS>(ManagerName.Fps);
 #endif

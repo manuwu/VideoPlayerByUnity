@@ -2,10 +2,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Reflection;
-using System.Collections;
+using System.Net.NetworkInformation;
 
 namespace CCS
 {
@@ -269,9 +266,9 @@ namespace CCS
         //判断游戏是否暂停，统一处理方法
         public void OnApplicationPause(bool pause)
         {
-#if UNITY_IPHONE || UNITY_ANDROID
-            //Util.CallMethod("GlobalListener", "OnApplicationPause", pause);
-#endif
+//#if UNITY_IPHONE || UNITY_ANDROID
+//            //Util.CallMethod("GlobalListener", "OnApplicationPause", pause);
+//#endif
         }
 
         //游戏焦点处理
@@ -279,21 +276,21 @@ namespace CCS
         private double loseFocusTime = 0;
         public void OnApplicationFocus(bool focus)
         {
-#if UNITY_IPHONE || UNITY_ANDROID
-            if (!focus)
-            {
-                //失去焦点
-                loseFocusTime = Util.GetTimeStamp();
-            }
-            else
-            {
-                //获得焦点
-                if (loseFocusTime > 0)
-                {
-                    //Util.CallMethod("GlobalListener", "OnApplicationFocus", Util.GetTimeStamp() - loseFocusTime);
-                }
-            }
-#endif
+//#if UNITY_IPHONE || UNITY_ANDROID
+//            if (!focus)
+//            {
+//                //失去焦点
+//                loseFocusTime = Util.GetTimeStamp();
+//            }
+//            else
+//            {
+//                //获得焦点
+//                if (loseFocusTime > 0)
+//                {
+//                    //Util.CallMethod("GlobalListener", "OnApplicationFocus", Util.GetTimeStamp() - loseFocusTime);
+//                }
+//            }
+//#endif
         }
 
         public static string DateTimeString
@@ -460,6 +457,30 @@ namespace CCS
                     break;
             }
             return path;
+        }
+        
+        public static string GetMacAddress()
+        {
+            string physicalAddress = "";
+            NetworkInterface[] nice = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (NetworkInterface adaper in nice)
+            {
+                if (adaper.Description == "en0")
+                {
+                    physicalAddress = adaper.GetPhysicalAddress().ToString();
+                    break;
+                }
+                else
+                {
+                    physicalAddress = adaper.GetPhysicalAddress().ToString();
+ 
+                    if (physicalAddress != "")
+                    {
+                        break;
+                    };
+                }
+            }
+            return physicalAddress;
         }
     }
 }

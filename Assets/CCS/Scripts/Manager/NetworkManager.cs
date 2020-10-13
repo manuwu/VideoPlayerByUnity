@@ -5,11 +5,20 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using SimpleJSON;
 using System.Runtime.InteropServices;
+using UnityEngine.Networking;
 
-namespace CCS {
 
-    public enum DataType { AdminEvent = 1, AdminResourceManageEvent, StatusEvent, UserResourceManageEvent, DeviceInfo }
-    public enum PlayState { Idle, Play, Pause }
+namespace CCS
+{
+
+    public enum DataType     { AdminEvent = 1, AdminResourceManageEvent, StatusEvent, UserResourceManageEvent, DeviceInfo }
+
+    public class PlayState
+    {
+        public const string Idle="0";
+        public const string Play="1";
+        public const string Pause = "2";
+    }
     public enum ControlState { NoThing = 0, Play, Pause, Stop, Resume, Loop, NoLoop, TurnOff = 10, Reboot = 20 }
 
     public struct AdminMessage
@@ -23,8 +32,20 @@ namespace CCS {
         public ControlState Control;
         public long Progress;
         public ResourceInfo Resource;
+        public Devices[] Devices;
     }
 
+    public class Devices
+    {
+        public int Id;
+        public string SerialNumber;
+        public Devices(int id,string seriNum)
+        {
+            this.Id = id;
+            this.SerialNumber = seriNum;
+        }
+    }
+    
     public struct ResourceInfo
     {
         public int Id;
@@ -40,7 +61,7 @@ namespace CCS {
         public int Width;
         public int Height;
         public bool Recommend;
-
+        public bool IsLive;
     }
 
     public struct FileTypeInfo
@@ -71,7 +92,8 @@ namespace CCS {
         public string SerialNumber;
         public string Description;
     }
-    public class NetworkManager : Manager {
+    public class NetworkManager : Manager
+    {
 
         #region Private Fields
 
@@ -102,7 +124,7 @@ namespace CCS {
             {
                 string info = _webData.MsgQueue.Dequeue();
                 JSONNode json = JSON.Parse(info);
-                NetMsgHandler.SendMsg(json["Type"].ToString().Trim('"'), json["Data"].ToString());
+                NetMsgHandler.SendMsg(json["Type"], json["Data"].ToString());
             }
         }
 
@@ -121,17 +143,22 @@ namespace CCS {
         /// <summary>
         /// 发送链接请求
         /// </summary>
-        public void SendConnect() {
+        public void SendConnect()
+        {
             _webData.Connect();
         }
 
         /// <summary>
         /// 发送SOCKET消息
         /// </summary>
-        public void SendMessage(string msg) {
+        public void SendMessage(string msg)
+        {
+            Debug.Log("manu msg "+msg);
             // Send message to the server  
-            if(_webData!=null)
+            if (_webData != null)
+            {
                 _webData.WebSocket.Send(msg);
+            }
         }
 
         /// <summary>
@@ -152,7 +179,8 @@ namespace CCS {
             _webData.WebSocket.Close(1000, "Bye!");
         }
 
-        public void Unload() {
+        public void Unload()
+        {
             downSprites.Clear();
             if (_webData.WebSocket != null)
                 _webData.WebSocket.Close();
@@ -161,9 +189,10 @@ namespace CCS {
         }
 
 
-        public void HttpGetReq(string url,Action<string> callBack)
+        public void HttpGetReq(string url, Action<string> callBack)
         {
-            StartCoroutine(StartHttpGetReq(url,callBack));
+            Debug.LogError("manu url "+url);
+            StartCoroutine(StartHttpGetReq(url, callBack));
         }
 
         /// <summary>
@@ -171,16 +200,20 @@ namespace CCS {
         /// </summary>
         IEnumerator StartHttpGetReq(string url, Action<string> callBack)
         {
-            WWW www = new WWW(url);
-            www.threadPriority = UnityEngine.ThreadPriority.High;
-            yield return www;
-            if (string.IsNullOrEmpty(www.error))
+            using (UnityWebRequest www = UnityWebRequest.Get(url))
             {
-                if (callBack!=null)
+                yield return www.Send();
+                if (www.isNetworkError || www.isHttpError)
                 {
-                    callBack(www.text);
+                    Debug.Log(url+"error"+ www.error);
                 }
-                Util.Log(www.text);
+                else
+                {
+                    if (callBack != null)
+                    {
+                        callBack(www.downloadHandler.text);
+                    }
+                }
             }
         }
 
@@ -192,21 +225,24 @@ namespace CCS {
         /// <summary>
         /// http Post请求
         /// </summary>
-        IEnumerator StartHttpPostReq(string url, Dictionary<string,string> post, Action<string> callBack)
+        IEnumerator StartHttpPostReq(string url, Dictionary<string, string> post, Action<string> callBack)
         {
             WWWForm form = new WWWForm();
             foreach (KeyValuePair<string, string> post_arg in post)
                 form.AddField(post_arg.Key, post_arg.Value);
-            WWW www = new WWW(url,form);
-            www.threadPriority = UnityEngine.ThreadPriority.High;
-            yield return www;
-            if (string.IsNullOrEmpty(www.error))
+
+            using (UnityWebRequest www = UnityWebRequest.Post(url, form))
             {
-                if (callBack != null)
+                yield return www.SendWebRequest();
+                if (www.isNetworkError || www.isHttpError)
                 {
-                    callBack(www.text);
+                    Debug.Log(www.error);
                 }
-                Util.Log(www.text);
+                else
+                {
+                    if (callBack != null)
+                        callBack(www.downloadHandler.text);
+                }
             }
         }
 
@@ -222,20 +258,49 @@ namespace CCS {
         {
             if (img != null)
             {
-                WWW www = new WWW(url);
-                www.threadPriority = UnityEngine.ThreadPriority.High;
-                yield return www;
-                if (www.isDone && string.IsNullOrEmpty(www.error))
+                if (url.StartsWith(AppConst.dirSep))
                 {
-                    Texture2D tempTexture = new Texture2D(4, 4, TextureFormat.DXT1, false);
-                    www.LoadImageIntoTexture(tempTexture);
-                    if(img!=null)
-                        img.texture = tempTexture;
-                    tempTexture = null;
+                    url = string.Format("{0}{1}", AppConst.IP, url);
+                }
+                UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+                yield return www.SendWebRequest();
+                if(www.isNetworkError || www.isHttpError) {
+                    Debug.Log(url+ www.error);
+                }
+                else {
+                    img.texture=DownloadHandlerTexture.GetContent(www);
                 }
             }
         }
+        
+        public void HttpDownImageReq(string url, Action<Texture> callBack)
+        {
+            StartCoroutine(HttpDownImageResp(url, callBack));
+        }
 
+        /// <summary>
+        /// http请求
+        /// </summary>
+        IEnumerator HttpDownImageResp(string url, Action<Texture> callBack)
+        {
+            if (url.StartsWith(AppConst.dirSep))
+            {
+                url = string.Format("{0}{1}", AppConst.IP, url);
+            }
+
+            UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+            yield return www.SendWebRequest();
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(url + www.error);
+            }
+            else
+            {
+                Texture myTexture = DownloadHandlerTexture.GetContent(www);
+                if (callBack != null)
+                    callBack(myTexture);
+            }
+        }
 
         /// <summary>
         /// 将字节数组转换为结构体

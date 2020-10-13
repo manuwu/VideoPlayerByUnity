@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 925767139
+CRC: 908767309
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e6911a55ee66176dabebc07e1061056d
+    Hash: df1e91f32a518828e8a1ca39423d6a3c
   TypeTreeHash:
     serializedVersion: 2
     Hash: bfeae3772f2d0d25f6c605c45f456ece
@@ -46,4 +46,4 @@ ClassTypes:
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/VideoPlayPanel/VideoPlayPanel.prefab
 Dependencies:
-- e:/newworldproject/centercontrol/assets/StreamingAssets/controlrootatlas.unity3d
+- e:/newworldproject/centercontrolme/assets/StreamingAssets/controlrootatlas.unity3d

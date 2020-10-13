@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using BestHTTP.Extensions;
+using UnityEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     using System.Runtime.InteropServices;
 #else
-    using BestHTTP.WebSocket.Frames;
+using BestHTTP.WebSocket.Frames;
     using BestHTTP.WebSocket.Extensions;
 #endif
 
@@ -464,11 +465,14 @@ namespace BestHTTP.WebSocket
         public void Send(string message)
         {
             if (!IsOpen)
+            {
                 return;
+            }
 
 #if (!UNITY_WEBGL || UNITY_EDITOR)
             webSocket.Send(message);
 #else
+
             WS_Send_String(this.ImplementationId, message);
 #endif
         }

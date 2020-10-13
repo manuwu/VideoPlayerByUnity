@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4168157073
+CRC: 2930316046
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e46407dd4ccbe0611b9e1885624e4f02
+    Hash: 317fbec222b758e6f2a3127306b08856
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 107d050f17a5d30aa0d7e9b575569fe3
+    Hash: fe3c7681bf78056a4d4c68c4822776c4
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -34,6 +34,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 2109663825, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
+  Script: {fileID: -1184210157, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
   Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
   Script: {fileID: -1200242548, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
@@ -52,5 +54,5 @@ ClassTypes:
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlPanel/ControlPanel.prefab
 Dependencies:
-- e:/newworldproject/centercontrol/assets/StreamingAssets/signatlas.unity3d
-- e:/newworldproject/centercontrol/assets/StreamingAssets/controlrootatlas.unity3d
+- e:/newworldproject/centercontrolme/assets/StreamingAssets/signatlas.unity3d
+- e:/newworldproject/centercontrolme/assets/StreamingAssets/controlrootatlas.unity3d

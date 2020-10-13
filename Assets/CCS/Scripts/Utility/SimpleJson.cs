@@ -144,6 +144,22 @@ namespace SimpleJSON
                 Value = value.ToString();
             }
         }
+        
+        public virtual long AsLong
+        {
+            get
+            {
+                long v = 0;
+                if (long.TryParse(Value,out v))
+                    return v;
+                return 0;
+            }
+            set
+            {
+                Value = value.ToString();
+            }
+        }
+        
         public virtual bool AsBool
         {
             get
@@ -842,6 +858,11 @@ namespace SimpleJSON
         public JSONData(double aData)
         {
             AsDouble = aData;
+        }
+        
+        public JSONData(long aData)
+        {
+            AsLong = aData;
         }
         public JSONData(bool aData)
         {

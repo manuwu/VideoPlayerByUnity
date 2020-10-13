@@ -8,6 +8,7 @@ using System.Text;
 
 using BestHTTP.Extensions;
 using BestHTTP.WebSocket.Frames;
+using UnityEngine;
 
 namespace BestHTTP.WebSocket
 {
@@ -128,10 +129,11 @@ namespace BestHTTP.WebSocket
         public void Send(string message)
         {
             if (message == null)
+            {
                 throw new ArgumentNullException("message must not be null!");
+            }
 
             byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
-
             Send(new WebSocketFrame(this.WebSocket, WebSocketFrameTypes.Text, data));
         }
 

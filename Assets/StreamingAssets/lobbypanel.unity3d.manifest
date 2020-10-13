@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2440874326
+CRC: 217480115
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: e6e77cdbbd90ee7b20a7003582ad003e
+    Hash: dbce8153ac333e00a4bc6d2e84efb21b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 9c7918b2d3cc234431eafe724701b5f4
@@ -68,4 +68,4 @@ ClassTypes:
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/LobbyPanel/LobbyPanel.prefab
 Dependencies:
-- e:/newworldproject/centercontrol/assets/StreamingAssets/controlrootatlas.unity3d
+- e:/newworldproject/centercontrolme/assets/StreamingAssets/controlrootatlas.unity3d

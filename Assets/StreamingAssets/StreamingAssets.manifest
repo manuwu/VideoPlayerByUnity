@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 1500729474
+CRC: 1113732156
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -29,5 +29,17 @@ AssetBundleManifest:
         Dependency_0: controlrootatlas.unity3d
     Info_7:
       Name: chooseservepanel.unity3d
+      Dependencies:
+        Dependency_0: controlrootatlas.unity3d
+    Info_8:
+      Name: choosedevicepanel.unity3d
+      Dependencies:
+        Dependency_0: controlrootatlas.unity3d
+    Info_9:
+      Name: choosesamescenedevicepanel.unity3d
+      Dependencies:
+        Dependency_0: controlrootatlas.unity3d
+    Info_10:
+      Name: imageplaypanel.unity3d
       Dependencies:
         Dependency_0: controlrootatlas.unity3d

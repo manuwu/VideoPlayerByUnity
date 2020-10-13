@@ -9,6 +9,7 @@ namespace CCS {
         public const string Network = "NetworkManager";
         public const string Resource = "ResourceManager";
         public const string TPManager = "TPAtlasManager";
+        public const string PLayer = "PlayerManager";
 
         public const string Fps = "Fps";
     }

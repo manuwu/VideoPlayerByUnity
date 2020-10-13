@@ -24,7 +24,7 @@ namespace CCS
     {
         private string[] m_Variants = { };
         private AssetBundleManifest manifest;
-        public AssetBundle shared, assetbundle;
+        public  AssetBundle shared, assetbundle;
         private Dictionary<string, AssetBundle> bundles;
         private Dictionary<string, AssetBundleManifest> manifestMap = new Dictionary<string, AssetBundleManifest>();
 

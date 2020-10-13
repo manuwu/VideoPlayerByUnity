@@ -416,7 +416,9 @@ namespace UMP
             get
             {
                 if (_mediaPlayer != null)
+                {
                     return _mediaPlayer.IsReady;
+                }
                 return false;
             }
         }
@@ -608,7 +610,7 @@ namespace UMP
         private VideoServices _videoServices;
 
         private string _tmpPath = string.Empty;
-        private bool _isParsing;
+        private bool   _isParsing;
         private static bool _isExportCompleted;
         private static Dictionary<string, string> _cachedVideoPaths = new Dictionary<string, string>();
 
@@ -1031,7 +1033,9 @@ namespace UMP
         public void Play()
         {
             if (_videoPathPreparingEnum != null)
+            {
                 StopCoroutine(_videoPathPreparingEnum);
+            }
 
             _videoPathPreparingEnum = VideoPathPreparing(_path, true, this);
             StartCoroutine(_videoPathPreparingEnum);

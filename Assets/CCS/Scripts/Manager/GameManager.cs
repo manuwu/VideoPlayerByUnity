@@ -115,7 +115,7 @@ namespace CCS
                 fileDic.TryGetValue("ip", out AppConst.Port);
                 //
                 AppConst.IP = string.Format(AppConst.IP, AppConst.Port);
-                AppConst.WebSocketAdd = string.Format(AppConst.WebSocketAdd, AppConst.Port);
+                AppConst.WebSocketAdd = string.Format(AppConst.WebSocketAdd, AppConst.Port,Util.GetMacAddress());
                 NetManager.InitNet();
                 ResManager.Initialize();
                 PanManager.OpenPanel<LobbyPanel>(PanelName.LobbyPanel);

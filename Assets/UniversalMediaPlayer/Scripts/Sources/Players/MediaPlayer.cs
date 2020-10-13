@@ -120,6 +120,7 @@ namespace UMP
             {
                 return _player.VideoOutputObjects;
             }
+
             set
             {
                 _player.VideoOutputObjects = value;
