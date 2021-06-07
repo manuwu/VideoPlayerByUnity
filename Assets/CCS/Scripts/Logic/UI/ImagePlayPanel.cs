@@ -14,8 +14,8 @@ public class ImagePlayPanel : PanelBase
     
     //Data
     private Quaternion cameraRow;
-    private Vector3 m_LastMousePosition;
-    private float   m_MouseTime;
+    private Vector3 lastMousePosition;
+    private float   mouseTime;
     
     public override void Init(params object[] args)
     {
@@ -24,7 +24,6 @@ public class ImagePlayPanel : PanelBase
         videoCameraTran.localPosition=Vector3.zero;
         videoCameraTran.localRotation=Quaternion.Euler(0,0,0);
         PlayerManager.ShowPlayerRoot();
-        PlayerManager.ShowImagePlayerRoot();
         PanManager.ShowLoading();
         
         NetManager.HttpDownImageReq(args[0].ToString(),LoadImageCallBack);
@@ -56,19 +55,19 @@ public class ImagePlayPanel : PanelBase
     
     void SetCursorVisiable()
     {
-        if (Input.mousePosition != m_LastMousePosition)
+        if (Input.mousePosition != lastMousePosition)
         {
-            m_LastMousePosition = Input.mousePosition;
+            lastMousePosition = Input.mousePosition;
 
             videoControlRoot.SetActive(true);
             Cursor.visible = true;
-            m_MouseTime = 0;
+            mouseTime = 0;
         }
         else
         {
-            m_MouseTime += 1;
+            mouseTime += 1;
 
-            if (m_MouseTime >= 5)
+            if (mouseTime >= 5)
             {
                 Cursor.visible = false;
                 videoControlRoot.SetActive(false);
@@ -81,7 +80,29 @@ public class ImagePlayPanel : PanelBase
         backBtn.onClick.AddListener(OnClickBack);
         deviceBtn.onClick.AddListener(OnClickDeviceBtn);
     }
+    
+    public override void AddEvent()
+    {
+        base.AddEvent();
+        NetMsgHandler.AddListener(NetMessageConst.SameCamera, UpdateCameraRotation);
+    }
 
+    public override void RemoveEvent()
+    {
+        base.RemoveEvent();
+        NetMsgHandler.RemoveListener(NetMessageConst.SameCamera, UpdateCameraRotation);
+    }
+
+    private void UpdateCameraRotation(string msg)
+    {
+        JSONNode json = JSON.Parse(msg);
+        cameraRow.x = json["x"].AsFloat;
+        cameraRow.y = json["y"].AsFloat;
+        cameraRow.z = json["z"].AsFloat;
+        cameraRow.w = json["w"].AsFloat;
+        videoCameraTran.rotation = Quaternion.Lerp(videoCameraTran.rotation,cameraRow, 10f * Time.deltaTime);
+    }
+    
     void OnClickDeviceBtn()
     {
         PanManager.OpenPanel<ChooseSameSceneDevicePanel>(PanelName.ChooseSameSceneDevicePanel);
@@ -90,7 +111,6 @@ public class ImagePlayPanel : PanelBase
     private void OnClickBack()
     {
         PlayerManager.HidePlayerRoot();
-        PlayerManager.HideImagePlayerRoot();
         PlayerManager.ResetImagePlayer();
         PanManager.AllOpenWithout(PanelName.ImagePlayPanel);
         PanManager.ClosePanel(PanelName.ImagePlayPanel);

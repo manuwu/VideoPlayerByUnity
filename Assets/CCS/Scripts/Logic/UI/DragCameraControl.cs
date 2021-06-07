@@ -26,33 +26,37 @@ public class DragCameraControl : MonoBehaviour
  
 	void Update ()
 	{
-		if (Input.GetMouseButton(0))
+		if (PlayerManager.isCanDragCamera)
 		{
-			x += Input.GetAxis("Mouse X") * xSpeed * 0.02f;
-			y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
-			y = ClampAngle(y, yMinLimit, yMaxLimit);
-			var rotation = Quaternion.Euler(y, x, 0);
-			
-			transform.rotation = rotation;
-		}
-		else if (Input.GetAxis("Mouse ScrollWheel") != 0)
-		{
-
-			if (normalDistance >= MouseZoomMin && normalDistance <= MouseZoomMax)
+			if (Input.GetMouseButton(0))
 			{
-				normalDistance -= Input.GetAxis("Mouse ScrollWheel") * MouseWheelSensitivity;
-			}
+				x += Input.GetAxis("Mouse X") * xSpeed * 0.02f;
+				y -= Input.GetAxis("Mouse Y") * ySpeed * 0.02f;
+				y = ClampAngle(y, yMinLimit, yMaxLimit);
+				var rotation = Quaternion.Euler(y, x, 0);
 
-			if (normalDistance < MouseZoomMin)
-			{
-				normalDistance = MouseZoomMin;
+				transform.rotation = rotation;
 			}
+			else if (Input.GetAxis("Mouse ScrollWheel") != 0)
+			{
 
-			if (normalDistance > MouseZoomMax)
-			{
-				normalDistance = MouseZoomMax;
+				if (normalDistance >= MouseZoomMin && normalDistance <= MouseZoomMax)
+				{
+					normalDistance -= Input.GetAxis("Mouse ScrollWheel") * MouseWheelSensitivity;
+				}
+
+				if (normalDistance < MouseZoomMin)
+				{
+					normalDistance = MouseZoomMin;
+				}
+
+				if (normalDistance > MouseZoomMax)
+				{
+					normalDistance = MouseZoomMax;
+				}
+
+				transform.localPosition = Vector3.forward * normalDistance;
 			}
-			transform.localPosition =Vector3.forward*normalDistance;
 		}
 	}
  

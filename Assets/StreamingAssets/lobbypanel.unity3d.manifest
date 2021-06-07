@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 217480115
+CRC: 3487726403
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: dbce8153ac333e00a4bc6d2e84efb21b
+    Hash: 68caffc45e66f601e5bbbb9bd1054097
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9c7918b2d3cc234431eafe724701b5f4
+    Hash: 8f116ce3936460fb2a442defebf3d90f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -29,6 +29,8 @@ ClassTypes:
   Script: {fileID: -1200242548, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
   Script: {fileID: -98529514, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: -146154839, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
   Script: {fileID: 1367256648, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
@@ -55,6 +57,12 @@ ClassTypes:
   Script: {fileID: -1184210157, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 50f92c9447eaf174091ec4b8832e1b84, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b8f250fbf5b5a654db3d0929a837a103, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: de9965dde08129741bb4355f98fe45e3, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b08dc71e5e35cb241b2db272743d24c4, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -68,4 +76,4 @@ ClassTypes:
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/LobbyPanel/LobbyPanel.prefab
 Dependencies:
-- e:/newworldproject/centercontrolme/assets/StreamingAssets/controlrootatlas.unity3d
+- e:/newworldproject/centercontrol/assets/StreamingAssets/controlrootatlas.unity3d

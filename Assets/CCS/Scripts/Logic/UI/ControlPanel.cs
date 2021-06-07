@@ -16,6 +16,12 @@ public class ControlPanel : PanelBase
     private DataGrid devicesDG;
     private Dictionary<string, Transform> diviceItemList = new Dictionary<string, Transform>();
     private JSONNode devicesData;
+    private string currentSameSceneDeviceSeriNum;
+    
+    private Color green=new Color(0,0.569f,0.42f);
+    private Color yellow=new Color(0.780f,0.549f,0);
+    private Color res=new Color(0.667f,0,0);
+
     public override void Init(params object[] args)
     {
         base.Init(args);
@@ -29,6 +35,7 @@ public class ControlPanel : PanelBase
             return;
         }
         isInit = true;
+        currentSameSceneDeviceSeriNum = string.Empty;
         Transform skinTrans = skin.transform;
         poweOffBtn = skinTrans.Find("powerOffBtn").GetComponent<Button>();
         restartBtn = skinTrans.Find("restartBtn").GetComponent<Button>();
@@ -48,13 +55,13 @@ public class ControlPanel : PanelBase
     {
         base.AddEvent();
         FrameMsgHandler.AddListener(NetMessageConst.UpdateOnlineDeviceInfo, UpdateOnlineDeviceInfo);
-        GetDevicesListReq();
+        GetSameScreenDeviceReq();
     }
 
     private void OnEnable()
     {
         if (isInit)
-            GetDevicesListReq();
+            GetSameScreenDeviceReq();
     }
 
     public override void RemoveEvent()
@@ -117,18 +124,27 @@ public class ControlPanel : PanelBase
     {
         string id = json["id"];
         obj.transform.Find("num").GetComponent<Text>().text = id;
-
         string seriaNum = json["serialNumber"];
         obj.transform.Find("id").GetComponent<Text>().text = seriaNum;
-
         diviceItemList[seriaNum] = obj.transform;
-        obj.transform.Find("sameBtn").GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
-        obj.transform.Find("sameBtn").GetComponent<Toggle>().onValueChanged.AddListener((bool isOn) =>
+        Toggle sameSceneToggle=obj.transform.Find("sameBtn").GetComponent<Toggle>();
+        sameSceneToggle.onValueChanged.RemoveAllListeners();
+        if (currentSameSceneDeviceSeriNum.Equals(seriaNum))
+        {
+            sameSceneToggle.isOn = true;
+            obj.transform.Find("sameBtn/Text").GetComponent<Text>().text = "取消同屏";
+        }
+        else
+        {
+            sameSceneToggle.isOn = false;
+            obj.transform.Find("sameBtn/Text").GetComponent<Text>().text = "同屏";
+        }
+        sameSceneToggle.onValueChanged.AddListener((bool isOn) =>
         {
             if (isOn)
             {
                 obj.transform.Find("sameBtn/Text").GetComponent<Text>().text = "取消同屏";
-                GetSameScreenReq(seriaNum);
+                SetSameScreenReq(seriaNum);
             }
             else
             {
@@ -140,6 +156,10 @@ public class ControlPanel : PanelBase
         obj.transform.Find("pausePlayBtn").GetComponent<Button>().onClick.RemoveAllListeners();
         obj.transform.Find("pausePlayBtn").GetComponent<Button>().onClick.AddListener(() =>
         {
+            if (!BtnClickToken.TakeToken(1.5f))
+            {
+                return;
+            }
             AdminMessage msg = new AdminMessage();
             msg.Type = DataType.AdminEvent;
             msg.Data.Control = ControlState.Stop;
@@ -159,29 +179,30 @@ public class ControlPanel : PanelBase
         string url = string.Format("{0}{1}", AppConst.IP, NetMessageConst.SetSameScreenMsg);
         Dictionary<string, string> post = new Dictionary<string, string>();
         post.Add("sn", devNum);
-        NetManager.HttpPostReq(url, post, null);
-    }    
-    
-    void GetSameScreenReq(string devNum)
-    {
-        NetManager.HttpGetReq(string.Format("{0}{1}",AppConst.IP,
-            string.Format(NetMessageConst.GetSameScreenMsg,devNum)), GetSameScreenResp);
+        NetManager.HttpPostReq(url, post, SetSameScreenResp);
     }
 
-    void GetSameScreenResp(string json)
+    void SetSameScreenResp(string json)
     {
-        Debug.Log("manu GetSameScreenResp "+json);
-        JSONNode jsonNode = JSON.Parse(json);
-        if (jsonNode["code"].AsInt == 0)
+        Debug.Log("manu SetSameScreenResp json"+json);
+    }
+    
+    void GetSameScreenDeviceReq()
+    {
+        string url = string.Format("{0}{1}", AppConst.IP, NetMessageConst.GetSameScreenDeviceMsg);
+        NetManager.HttpGetReq(url, GetSameScreenDeviceResp);
+    }
+
+    void GetSameScreenDeviceResp(string msg)
+    {
+        Debug.Log("manu GetSameScreenDeviceResp "+msg);
+        JSONNode node  = JSON.Parse(msg);
+        if (node["code"].AsInt == 0)
         {
-            PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, 
-                jsonNode["data"]["Resource"]["uri"].ToString().Trim('"'),jsonNode["data"]["Progress"].AsLong);
-            PanManager.AllHidenWithout(PanelName.VideoPlayPanel); 
+            currentSameSceneDeviceSeriNum = node["data"];
         }
-        else
-        {
-            Debug.LogError("manu GetSameScreenResp is error "+json );
-        }
+
+        GetDevicesListReq();
     }
 
     void UpdateOnlineDeviceInfo(JSONNode jsonNode)
@@ -189,43 +210,43 @@ public class ControlPanel : PanelBase
         for (int i = 0; i < jsonNode.Count; i++)
         {
             Transform item;
-            if (diviceItemList.TryGetValue(jsonNode[i]["UserDevice"]["serialNumber"], out item))
+            if (diviceItemList.TryGetValue(jsonNode[i]["userDevice"]["serialNumber"], out item))
             {
                 Text connectTxt=item.Find("connectStay").GetComponent<Text>();
                 connectTxt.text= "已连接";
                 connectTxt.color=Color.green;
-                if (PlayState.Pause.Equals(jsonNode[i]["PlayerState"]))
+                if (PlayState.Pause.Equals(jsonNode[i]["playerState"]))
                 {
                     item.Find("playStay").GetComponent<Text>().text = "已暂停";
                     item.Find("pausePlayBtn").gameObject.SetActive(true);
                 }
-                else if (PlayState.Play.Equals(jsonNode[i]["PlayerState"]))
+                else if (PlayState.Play.Equals(jsonNode[i]["playerState"]))
                 {
-                    item.Find("playStay").GetComponent<Text>().text = "已播放";
+                    item.Find("playStay").GetComponent<Text>().text = "正在播放";
                     item.Find("pausePlayBtn").gameObject.SetActive(true);
                 }
-                else if (PlayState.Idle.Equals(jsonNode[i]["PlayerState"]))
+                else if (PlayState.Idle.Equals(jsonNode[i]["playerState"]))
                 {
                     item.Find("playStay").GetComponent<Text>().text = "未播放";
                     item.Find("pausePlayBtn").gameObject.SetActive(false);
                 }
 
-                int power = jsonNode[i]["PowerState"].AsInt;
+                int power = jsonNode[i]["powerState"].AsInt;
 
                 if (power < 33)
                 {
-                    item.Find("power").GetComponent<Image>().color = Color.red;
+                    item.Find("power").GetComponent<Image>().color = res;
                 }
                 else if (power > 33 && power < 66)
                 {
-                    item.Find("power").GetComponent<Image>().color = Color.yellow;
+                    item.Find("power").GetComponent<Image>().color = yellow;
                 }
                 else if (power > 66)
                 {
-                    item.Find("power").GetComponent<Image>().color = Color.green;
+                    item.Find("power").GetComponent<Image>().color = green;
                 }
 
-                double wifi = jsonNode[i]["SignalStrength"].AsDouble;
+                double wifi = jsonNode[i]["signalStrength"].AsDouble;
                 item.transform.Find("wifi").GetComponent<Image>().sprite = TPManager.GetSprite("SignAtlas", string.Format("ic_signal_wifi{0}", Math.Floor(wifi / 20)));
             }
         }

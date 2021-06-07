@@ -1,0 +1,20 @@
+password:anndroid_ssnwt
+alias:ssnwt
+
+gradle
+android {
+    signingConfigs {
+        debug {
+            storeFile file('../libs/ssnwt.keystore')
+            storePassword 'anndroid_ssnwt'
+            keyAlias = 'ssnwt'
+            keyPassword 'anndroid_ssnwt'
+        }
+        release {
+            storeFile file('../libs/ssnwt.keystore')
+            storePassword 'anndroid_ssnwt'
+            keyAlias = 'ssnwt'
+            keyPassword 'anndroid_ssnwt'
+        }
+    }
+}

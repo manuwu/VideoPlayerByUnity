@@ -23,8 +23,8 @@ public class VideoPlayPanel : PanelBase
 
     //Data
     private Quaternion cameraRow;
-    private Vector3 m_LastMousePosition;
-    private float   m_MouseTime;
+    private Vector3 lastMousePosition;
+    private float   mouseTime;
     
     public override void Init(params object[] args)
     {
@@ -60,6 +60,7 @@ public class VideoPlayPanel : PanelBase
         pauseBtn        = skin.transform.Find("BtnRoot/PauseButton").GetComponent<Button>();
         videoControlRoot=skin.transform.Find("BtnRoot/LeftCorner").gameObject;
         restartBtn      = skin.transform.Find("BtnRoot/LeftCorner/Corner/resartBtn").GetComponent<Toggle>();
+        restartBtn.gameObject.SetActive(false);
         currentTimeTxt  = skin.transform.Find("BtnRoot/currentTime").GetComponent<Text>();
         totalTimeTxt    = skin.transform.Find("BtnRoot/totalTime").GetComponent<Text>();
         videoSeekSlider = skin.transform.Find("BtnRoot/VideoSeekSlider").GetComponent<Slider>();
@@ -81,19 +82,19 @@ public class VideoPlayPanel : PanelBase
 
     void SetCursorVisiable()
     {
-        if (Input.mousePosition != m_LastMousePosition)
+        if (Input.mousePosition != lastMousePosition)
         {
-            m_LastMousePosition = Input.mousePosition;
+            lastMousePosition = Input.mousePosition;
 
             videoControlRoot.SetActive(true);
             Cursor.visible = true;
-            m_MouseTime = 0;
+            mouseTime = 0;
         }
         else
         {
-            m_MouseTime += 1;
+            mouseTime += 1;
 
-            if (m_MouseTime >= 5)
+            if (mouseTime >= 5)
             {
                 Cursor.visible = false;
                 videoControlRoot.SetActive(false);
@@ -142,7 +143,7 @@ public class VideoPlayPanel : PanelBase
         PanManager.ClosePanel(PanelName.ChooseSameSceneDevicePanel);
         PanManager.AllOpenWithout(PanelName.VideoPlayPanel);
         PanManager.ClosePanel(PanelName.VideoPlayPanel);
-
+        PlayerManager.ResetImagePlayer();
         Cursor.visible = true;
     }
 
@@ -242,12 +243,16 @@ public class VideoPlayPanel : PanelBase
 
     private void UpdateCameraRotation(string msg)
     {
-        JSONNode json = JSON.Parse(msg);
-        cameraRow.x = json["X"].AsFloat;
-        cameraRow.y = json["Y"].AsFloat;
-        cameraRow.z = json["Z"].AsFloat;
-        cameraRow.w = json["W"].AsFloat;
-        videoCameraTran.rotation = Quaternion.Lerp(videoCameraTran.rotation,cameraRow, 10f * Time.deltaTime);
+//        Debug.Log("manu UpdateCameraRotation msg" + msg);
+        if (PlayerManager.isCanDragCamera)
+        {
+            JSONNode json = JSON.Parse(msg);
+            cameraRow.x = json["x"].AsFloat;
+            cameraRow.y = json["y"].AsFloat;
+            cameraRow.z = json["z"].AsFloat;
+            cameraRow.w = json["w"].AsFloat;
+            videoCameraTran.rotation = Quaternion.Lerp(videoCameraTran.rotation, cameraRow, 10f * Time.deltaTime);
+        }
     }
 
     private void OnPLlayerEnd()
@@ -255,6 +260,10 @@ public class VideoPlayPanel : PanelBase
         if (!isLoop)
         {
             OnClickBack();
+        }
+        else
+        {
+            NetManager.SendMessage(PlayerManager.currentPlayVideoCommond);
         }
     }
 }

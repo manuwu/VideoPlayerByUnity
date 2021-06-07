@@ -15,14 +15,24 @@ namespace CCS
 
         void Start()
         {
-            StartCoroutine(Init());
+            StartCoroutine(InitWithoutConfig());
+        }
+        
+        IEnumerator InitWithoutConfig()
+        {
+            DontDestroyOnLoad(gameObject);
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            Application.runInBackground = true;
+
+            ResManager.Initialize();
+            PanManager.OpenPanel<ChooseServePanel>(PanelName.ChooseServePanel);
+            yield return null;
         }
 
         IEnumerator Init()
         {
             DontDestroyOnLoad(gameObject);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
-            Application.targetFrameRate = 40;
             Application.runInBackground = true;
 
             string resPath = Util.DataPath;  //数据目录
@@ -69,34 +79,6 @@ namespace CCS
             yield return null;
         }
 
-        //        public void OnApplicationPause(bool pause)
-        //        {
-        //#if UNITY_IPHONE || UNITY_ANDROID
-
-        //#endif
-        //        }
-
-        //        private double loseFocusTime = 0;
-        //        public void OnApplicationFocus(bool focus)
-        //        {
-        //#if UNITY_IPHONE || UNITY_ANDROID
-        //            if (!focus)
-        //            {
-        //                //失去焦点
-        //                loseFocusTime = Util.GetTimeStamp();
-        //            }
-        //            else
-        //            {
-        //                //获得焦点
-        //                if (loseFocusTime > 0)
-        //                {
-        //                    //Util.CallMethod("GlobalListener", "OnApplicationFocusManager", Util.GetTimeStamp() - loseFocusTime);
-        //                }
-        //            }
-        //#endif
-        //        }
-
-
         private void ConfigFileInit()
         {
             string url = Util.AppContentPath() + filesStr;
@@ -115,7 +97,7 @@ namespace CCS
                 fileDic.TryGetValue("ip", out AppConst.Port);
                 //
                 AppConst.IP = string.Format(AppConst.IP, AppConst.Port);
-                AppConst.WebSocketAdd = string.Format(AppConst.WebSocketAdd, AppConst.Port,Util.GetMacAddress());
+                AppConst.WebSocketAdd = string.Format(AppConst.WebSocketHost, AppConst.Port,Util.GetMacAddress());
                 NetManager.InitNet();
                 ResManager.Initialize();
                 PanManager.OpenPanel<LobbyPanel>(PanelName.LobbyPanel);

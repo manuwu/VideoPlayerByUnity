@@ -1,10 +1,11 @@
 ManifestFileVersion: 0
-CRC: 1113732156
+CRC: 2690715248
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: systemui.unity3d
-      Dependencies: {}
+      Dependencies:
+        Dependency_0: controlrootatlas.unity3d
     Info_1:
       Name: signatlas.unity3d
       Dependencies: {}

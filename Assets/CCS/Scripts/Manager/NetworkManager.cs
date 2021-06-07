@@ -103,12 +103,10 @@ namespace CCS
         #endregion
 
         #region Unity Events
-        void Start()
+
+        private void Awake()
         {
-            //_webData = new WebData();
-            //_webData.OpenWebSocket();
-            //InvokeRepeating("UpdateMsg", 0.5f,0.02f);
-            //tempTexture = new Texture2D(4, 4, TextureFormat.DXT1, false);
+            NetMsgHandler.AddListener(NetMessageConst.SocketServerClosed,SocketServerClosedEvent);
         }
 
         public void InitNet()
@@ -123,8 +121,9 @@ namespace CCS
             if (_webData.MsgQueue.Count > 0)
             {
                 string info = _webData.MsgQueue.Dequeue();
+
                 JSONNode json = JSON.Parse(info);
-                NetMsgHandler.SendMsg(json["Type"], json["Data"].ToString());
+                NetMsgHandler.SendMsg(json["type"], json["data"].ToString());
             }
         }
 
@@ -138,6 +137,12 @@ namespace CCS
         //    }
         //    Debug.Log("_webData.MsgQueue.Count " + _webData.MsgQueue.Count);
         //}
+
+        void SocketServerClosedEvent(string msg)
+        {
+            Shutdown();
+            SendConnect();
+        }
         #endregion
 
         /// <summary>
@@ -182,7 +187,7 @@ namespace CCS
         public void Unload()
         {
             downSprites.Clear();
-            if (_webData.WebSocket != null)
+            if (_webData!=null && _webData.WebSocket != null)
                 _webData.WebSocket.Close();
             NetMsgHandler.ClearAllListeners();
             Util.LogWarning("~NetworkManager was destroy");
@@ -191,7 +196,7 @@ namespace CCS
 
         public void HttpGetReq(string url, Action<string> callBack)
         {
-            Debug.LogError("manu url "+url);
+//            Debug.LogError("manu url "+url);
             StartCoroutine(StartHttpGetReq(url, callBack));
         }
 

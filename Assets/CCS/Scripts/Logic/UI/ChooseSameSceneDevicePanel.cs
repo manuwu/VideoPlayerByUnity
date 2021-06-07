@@ -13,7 +13,7 @@ public class ChooseSameSceneDevicePanel : PanelBase
     private Button closeBtn;
     //Datas
     private DataGrid devicesDG;
-    private Dictionary<int, Transform> diviceItemList = new Dictionary<int, Transform>();
+    private Dictionary<string, Transform> diviceItemList = new Dictionary<string, Transform>();
     private JSONNode devicesData;
 
     private List<Devices> deviceList=new List<Devices>();
@@ -98,10 +98,10 @@ public class ChooseSameSceneDevicePanel : PanelBase
     {
         string seriaNum = json["serialNumber"];
         obj.transform.Find("id").GetComponent<Text>().text = seriaNum;
-
-        diviceItemList[json["id"].AsInt] = obj.transform;
-        obj.GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
-        obj.GetComponent<Toggle>().onValueChanged.AddListener((bool isOn) =>
+        diviceItemList[seriaNum] = obj.transform;
+        Toggle sameSceneToggle=obj.GetComponent<Toggle>();
+        sameSceneToggle.onValueChanged.RemoveAllListeners();
+        sameSceneToggle.onValueChanged.AddListener((bool isOn) =>
         {
             if (isOn)
             {
@@ -126,14 +126,66 @@ public class ChooseSameSceneDevicePanel : PanelBase
         JSONNode jsonNode = JSON.Parse(json);
         if (jsonNode["code"].AsInt == 0)
         {
-            PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, 
-                jsonNode["data"]["Resource"]["uri"].ToString().Trim('"'),jsonNode["data"]["Progress"].AsLong);
-            PanManager.AllHidenWithout(PanelName.VideoPlayPanel); 
+            JSONNode resourceNode = jsonNode["data"]["resource"];
+            if (!string.IsNullOrEmpty(resourceNode.ToString()) &&
+                !resourceNode.ToString().Trim('"').Equals(AppConst.Null))
+            {
+                FileType fileType = (FileType) resourceNode["fileType"]["id"].AsInt;
+                switch (fileType)
+                {
+                    case FileType.Picture360:
+                        PlayerManager.SetPlayerModel(fileType);
+                        PanManager.ClosePanel(PanelName.VideoPlayPanel);
+                        PanManager.OpenPanel<ImagePlayPanel>(PanelName.ImagePlayPanel,
+                            jsonNode["data"]["resource"]["uri"].ToString().Trim('"'), null);
+                        break;
+                    case FileType.APP:
+                        break;
+                    case FileType.Video2D:
+                    case FileType.Video3DLR:
+                    case FileType.Video1803DTB:
+                    case FileType.Video1802D:
+                    case FileType.Video3DTB:
+                    case FileType.Video1803DLR:
+                    case FileType.Video3602D:
+                    case FileType.Video3603DLR:
+                    case FileType.Video3603DTB:
+                        PanManager.ClosePanel(PanelName.ImagePlayPanel);
+                        PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel,
+                            jsonNode["data"]["resource"]["uri"].ToString().Trim('"'),
+                            jsonNode["data"]["progress"].AsLong);
+                        PlayerManager.SetPlayerModel(fileType);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            JSONArray deviceArray = jsonNode["data"]["devices"].AsArray;
+            if (deviceArray.Count > 0)
+            {
+                string serNum = deviceArray[0]["serialNumber"];
+                SetSameScreenReq(serNum);
+            }
+            OnCloseBtnClick();
         }
         else
         {
             Debug.LogError("manu GetSameScreenResp is error "+json );
         }
+    }
+    
+    void SetSameScreenReq(string devNum)
+    {
+        string url = string.Format("{0}{1}", AppConst.IP, NetMessageConst.SetSameScreenMsg);
+        Dictionary<string, string> post = new Dictionary<string, string>();
+        post.Add("sn", devNum);
+        NetManager.HttpPostReq(url, post, SetSameScreenResp);
+    }
+
+    void SetSameScreenResp(string json)
+    {
+        Debug.Log("manu SetSameScreenResp json"+json);
     }
     
     void CancelSameScreenReq()
@@ -146,20 +198,20 @@ public class ChooseSameSceneDevicePanel : PanelBase
         for (int i = 0; i < jsonNode.Count; i++)
         {
             Transform item;
-            if (diviceItemList.TryGetValue(jsonNode[i]["UserDevice"]["id"].AsInt, out item))
+            if (diviceItemList.TryGetValue(jsonNode[i]["userDevice"]["serialNumber"], out item))
             {
                 Text connectTxt=item.Find("connectStay").GetComponent<Text>();
                 connectTxt.text= "已连接";
                 connectTxt.color=Color.green;
-                if (PlayState.Pause.Equals(jsonNode[i]["PlayerState"]))
+                if (PlayState.Pause.Equals(jsonNode[i]["playerState"]))
                 {
                     item.Find("playStay").GetComponent<Text>().text = "已暂停";
                 }
-                else if (PlayState.Play.Equals(jsonNode[i]["PlayerState"]))
+                else if (PlayState.Play.Equals(jsonNode[i]["playerState"]))
                 {
-                    item.Find("playStay").GetComponent<Text>().text = "已播放";
+                    item.Find("playStay").GetComponent<Text>().text = "正在播放";
                 }
-                else if (PlayState.Idle.Equals(jsonNode[i]["PlayerState"]))
+                else if (PlayState.Idle.Equals(jsonNode[i]["playerState"]))
                 {
                     item.Find("playStay").GetComponent<Text>().text = "未播放";
                 }

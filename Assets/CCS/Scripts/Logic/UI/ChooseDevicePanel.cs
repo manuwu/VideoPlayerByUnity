@@ -15,7 +15,7 @@ public class ChooseDevicePanel : PanelBase
     private Toggle chooseAllToggle;
     //Datas
     private DataGrid devicesDG;
-    private Dictionary<int, Transform> diviceItemList = new Dictionary<int, Transform>();
+    private Dictionary<string, Transform> diviceItemList = new Dictionary<string, Transform>();
     private JSONNode devicesData;
     static string currentChooseSeinum;
     
@@ -104,6 +104,11 @@ public class ChooseDevicePanel : PanelBase
 
     private void OnPlayBtnClick()
     {
+        if (deviceList.Count <= 0)
+        {
+            PanManager.ShowToast("您还没选择设备");    
+            return;
+        }
         AdminMessage msg = new AdminMessage();
         msg.Type = DataType.AdminEvent;
         msg.Data.Control  = ControlState.Play;
@@ -113,11 +118,37 @@ public class ChooseDevicePanel : PanelBase
         msg.Data.Resource.FileType.Id = currentChooseFileType;
         msg.Data.Resource.Md5         = currentChooseMd5;
         msg.Data.Devices =deviceList.ToArray() ;
-
-        NetManager.SendMessage(Util.ObjectToJson(msg));
-        PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, currentChooseVideoUrl,null);
-        PanManager.ClosePanel(PanelName.ChooseDevicePanel);
-        PanManager.AllHidenWithout(PanelName.VideoPlayPanel);
+        PlayerManager.currentPlayVideoCommond = Util.ObjectToJson(msg);
+        NetManager.SendMessage(PlayerManager.currentPlayVideoCommond);
+        
+        FileType fileType = (FileType) currentChooseFileType;
+        switch (fileType)
+        {
+            case FileType.Picture360:
+                PlayerManager.SetPlayerModel(fileType);
+                PanManager.OpenPanel<ImagePlayPanel>(PanelName.ImagePlayPanel, currentChooseVideoUrl, null);
+                PanManager.ClosePanel(PanelName.ChooseDevicePanel);
+                PanManager.AllHidenWithout(PanelName.ImagePlayPanel);
+                break;
+            case FileType.APP:
+                break;
+            case FileType.Video2D:
+            case FileType.Video3DLR:
+            case FileType.Video1803DTB:
+            case FileType.Video1802D:
+            case FileType.Video3DTB:
+            case FileType.Video1803DLR:
+            case FileType.Video3602D:
+            case FileType.Video3603DLR:
+            case FileType.Video3603DTB:
+                PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, currentChooseVideoUrl, null);
+                PlayerManager.SetPlayerModel(fileType);
+                PanManager.ClosePanel(PanelName.ChooseDevicePanel);
+                PanManager.AllHidenWithout(PanelName.VideoPlayPanel);
+                break;
+            default:
+                break;
+        }
     }
 
     void GetDevicesListReq()
@@ -153,7 +184,7 @@ public class ChooseDevicePanel : PanelBase
         string seriaNum = json["serialNumber"];
         obj.transform.Find("id").GetComponent<Text>().text = seriaNum;
 
-        diviceItemList[json["id"].AsInt] = obj.transform;
+        diviceItemList[seriaNum] = obj.transform;
         obj.transform.Find("Toggle").GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
         obj.transform.Find("Toggle").GetComponent<Toggle>().onValueChanged.AddListener((bool isOn) =>
         {
@@ -187,20 +218,20 @@ public class ChooseDevicePanel : PanelBase
         for (int i = 0; i < jsonNode.Count; i++)
         {
             Transform item;
-            if (diviceItemList.TryGetValue(jsonNode[i]["UserDevice"]["id"].AsInt, out item))
+            if (diviceItemList.TryGetValue(jsonNode[i]["userDevice"]["serialNumber"], out item))
             {
                 Text connectTxt=item.Find("connectStay").GetComponent<Text>();
                 connectTxt.text= "已连接";
                 connectTxt.color=Color.green;
-                if (PlayState.Pause.Equals(jsonNode[i]["PlayerState"]))
+                if (PlayState.Pause.Equals(jsonNode[i]["playerState"]))
                 {
                     item.Find("playStay").GetComponent<Text>().text = "已暂停";
                 }
-                else if (PlayState.Play.Equals(jsonNode[i]["PlayerState"]))
+                else if (PlayState.Play.Equals(jsonNode[i]["playerState"]))
                 {
-                    item.Find("playStay").GetComponent<Text>().text = "已播放";
+                    item.Find("playStay").GetComponent<Text>().text = "正在播放";
                 }
-                else if (PlayState.Idle.Equals(jsonNode[i]["PlayerState"]))
+                else if (PlayState.Idle.Equals(jsonNode[i]["playerState"]))
                 {
                     item.Find("playStay").GetComponent<Text>().text = "未播放";
                 }

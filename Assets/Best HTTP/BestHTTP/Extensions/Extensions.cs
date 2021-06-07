@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -401,6 +402,7 @@ namespace BestHTTP.Extensions
     {
         public static Exception ServerClosedTCPStream()
         {
+            NetMsgHandler.SendMsg(NetMessageConst.SocketServerClosed,string.Empty);
             return new Exception("TCP Stream closed unexpectedly by the remote server");
         }
     }

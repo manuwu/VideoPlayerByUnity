@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3157002483
+CRC: 3476107951
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: aa6bfb8006aabe32b7d08621801cb03d
+    Hash: 57ebfdc77c2e81e5770f10dd232d74be
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 2d839ce2ef2181c5a4e16af81fab26b2
+    Hash: f0940a7cfcf1d346ec589179c4355163
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -23,10 +23,18 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 33
   Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
 - Class: 48
+  Script: {instanceID: 0}
+- Class: 64
   Script: {instanceID: 0}
 - Class: 81
   Script: {instanceID: 0}
+- Class: 82
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 1327945023, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
   Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 - Class: 114
@@ -50,13 +58,81 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: ccd20843c70496c40ad38c6e3b9a445e, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: af83935614709044585509aa53e836ef, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: e54c34c7e4be5a842a00ae6a86af3ddf, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 279d7e6a34d899b4088593824e46f8a7, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 638c870cac4da414fba921606d504407, type: 3}
+  Script: {fileID: 11500000, guid: 14c97e8a34f211e488ca95abb6e241c2, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 4ed685e8c5f1f584aa28b32dcf9bdab1, type: 3}
+  Script: {fileID: 11500000, guid: 1bad016bb70440e43a0a4da64cfad6d6, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: f6d1977a52888584496b1acc7e998011, type: 3}
+  Script: {fileID: 11500000, guid: 2735f48e691132f47bd3a88a902e74c4, type: 3}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {instanceID: 0}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 124
@@ -73,4 +149,5 @@ ClassTypes:
   Script: {instanceID: 0}
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/SystemUI/Global_UI.prefab
-Dependencies: []
+Dependencies:
+- e:/newworldproject/centercontrol/assets/StreamingAssets/controlrootatlas.unity3d

@@ -54,5 +54,5 @@ ClassTypes:
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ControlPanel/ControlPanel.prefab
 Dependencies:
-- e:/newworldproject/centercontrolme/assets/StreamingAssets/signatlas.unity3d
-- e:/newworldproject/centercontrolme/assets/StreamingAssets/controlrootatlas.unity3d
+- e:/newworldproject/centercontrol/assets/StreamingAssets/signatlas.unity3d
+- e:/newworldproject/centercontrol/assets/StreamingAssets/controlrootatlas.unity3d

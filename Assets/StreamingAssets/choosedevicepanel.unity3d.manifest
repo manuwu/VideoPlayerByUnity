@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1445099745
+CRC: 2555337017
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: de2afb9fd9cd9ff44bbd540f5a304263
+    Hash: e672a15761edc2b32c06d6bbda831a93
   TypeTreeHash:
     serializedVersion: 2
     Hash: b32c8d05357380dfa2cba0fcbf44c0eb
@@ -48,4 +48,4 @@ ClassTypes:
 Assets:
 - Assets/CCS/BuildResource/PlatformRoot/ControlRoot/ChooseDevicePanel/ChooseDevicePanel.prefab
 Dependencies:
-- e:/newworldproject/centercontrolme/assets/StreamingAssets/controlrootatlas.unity3d
+- e:/newworldproject/centercontrol/assets/StreamingAssets/controlrootatlas.unity3d

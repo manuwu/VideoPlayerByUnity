@@ -28,7 +28,20 @@ public class ChooseServePanel : PanelBase
         base.OnShowing();
         connectBtn = skin.transform.Find("connectBtn").GetComponent<Button>();
         serveInput = skin.transform.Find("ServeInputField").GetComponent<InputField>();
+        InitIp();
         AddUIEvent();
+    }
+
+    void InitIp()
+    {
+        if (PlayerPrefs.HasKey(AppConst.IPSaveKey))
+        {
+            serveInput.text = PlayerPrefs.GetString(AppConst.IPSaveKey);
+        }
+        else
+        {
+            serveInput.text = string.Empty;
+        }
     }
 
     void AddUIEvent()
@@ -43,10 +56,11 @@ public class ChooseServePanel : PanelBase
             PanManager.ShowToast("请输入服务器IP+端口");
             return;
         }
-        AppConst.WebSocketAdd = string.Format(AppConst.WebSocketAdd, serveInput.text);
-        AppConst.IP = string.Format(AppConst.IP, serveInput.text);
+        PlayerPrefs.SetString(AppConst.IPSaveKey,serveInput.text);
+        AppConst.IP = string.Format("{0}{1}",AppConst.Http, serveInput.text);
+        AppConst.WebSocketAdd = string.Format(AppConst.WebSocketHost, serveInput.text,Util.GetMacAddress());
         NetManager.InitNet();
         PanManager.OpenPanel<LobbyPanel>(PanelName.LobbyPanel);
-
+        PanManager.ClosePanel(PanelName.ChooseServePanel);
     }
 }

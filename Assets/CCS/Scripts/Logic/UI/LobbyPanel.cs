@@ -14,6 +14,7 @@ public class LobbyPanel : PanelBase
     private Toggle     editTog;
     private DataGrid   videoDG;
     private DataGrid   tagsDG;
+    private DataGrid   togsDG;
     private GameObject toggleTemp;
     private GameObject pageVideoTemp;
     private Transform  toggleParent;
@@ -23,14 +24,13 @@ public class LobbyPanel : PanelBase
     private Text   yellowNumt;
     private Text   redNum;
     private Text   registNumt;
-    private Text   openNum;
     private Text   connectNum;
     private Text   comeinNum;
     private Toggle currentChooseItem;
+    private RawImage iconImage;
+    private Button updateBtn;
 
     //Datas
-    private Dictionary<int, GameObject> toggleData;
-    //Dictionary<int, GameObject> videoPageDate;
     private int      redCount;
     private int      greenCount;
     private int      yellowCount;
@@ -41,15 +41,7 @@ public class LobbyPanel : PanelBase
     private int      currentChooseMenuId;
     private string   currentChooseMd5;
     private JSONNode currentChooseVideo;
-
-    private VideoPlayPanel m_VideoPlayPanel;
-
-    private void Awake()
-    {
-        toggleData = new Dictionary<int, GameObject>();
-        //m_VideoPlayPanel
-        //videoPageDate = new Dictionary<int, GameObject>();
-    }
+    
 
     private void Start()
     {
@@ -67,6 +59,7 @@ public class LobbyPanel : PanelBase
 
         if (isInit)
         {
+            GetDevicesListReq();
             return;
         }
         isInit = true;
@@ -81,6 +74,9 @@ public class LobbyPanel : PanelBase
         tagsDG        = videoRoot.transform.Find("topRoot/toggleGroup").GetComponent<DataGrid>();
         videoDG       = videoRoot.transform.Find("videoPageRoot/videoPagetemp/contenView").GetComponent<DataGrid>();
         toggleParent  = skinTrans.Find("videoListRoot/leftRoot/toggleGroup/Viewport/Content");
+        togsDG        = skinTrans.transform.Find("videoListRoot/leftRoot/toggleGroup").GetComponent<DataGrid>();
+        iconImage  = skinTrans.Find("videoListRoot/leftRoot/bg/icon").GetComponent<RawImage>();
+        updateBtn = skinTrans.Find("videoListRoot/leftRoot/updateBtn").GetComponent<Button>();
         toggleTemp    = toggleParent.Find("toggleItem").gameObject;
         videoParent   = skinTrans.Find("videoListRoot/videoPageRoot");
         pageVideoTemp = videoParent.Find("videoPagetemp").gameObject;
@@ -88,10 +84,12 @@ public class LobbyPanel : PanelBase
         yellowNumt    = skinTrans.Find("rightRoot/detialRoot/yellow/Text").GetComponent<Text>();
         redNum        = skinTrans.Find("rightRoot/detialRoot/red/Text").GetComponent<Text>();
         registNumt    = skinTrans.Find("rightRoot/detialRoot/regist/Text").GetComponent<Text>();
-        openNum       = skinTrans.Find("rightRoot/detialRoot/open/Text").GetComponent<Text>();
         connectNum    = skinTrans.Find("rightRoot/detialRoot/conect/Text").GetComponent<Text>();
         comeinNum     = skinTrans.Find("rightRoot/detialRoot/comein/Text").GetComponent<Text>();
         AddUIEvent();
+        NetManager.HttpGetReq(AppConst.IP+NetMessageConst.GetIconImageMsg,
+            GetIconImageCallBack);
+        GetDevicesListReq();
     }
 
     private void AddUIEvent()
@@ -100,13 +98,40 @@ public class LobbyPanel : PanelBase
         playLocalBtn.onClick.AddListener(PlayLocal);
         homeTog.onValueChanged.AddListener(OnClickHomeToggle);
         editTog.onValueChanged.AddListener(OnClickEditTogglr);
+        updateBtn.onClick.AddListener(OnClickUpdateButton);
     }
 
+    void OnClickUpdateButton()
+    {
+        if(!BtnClickToken.TakeToken(2))
+            return;
+
+        currentChooseVideoUrl = string.Empty;
+        togsDG.Destroy();
+        togsDG.MaxLength = 0;
+        GetToggleListReq();
+    }
+
+    void GetIconImageCallBack(string json)
+    {
+        JSONNode jsonNode = JSON.Parse(json);
+
+        JSONArray dataArray = jsonNode["data"].AsArray;
+        if (dataArray.Count > 0)
+        {
+            JSONNode iconControl = dataArray[0]["iconControl"];
+            if (!iconControl.ToString().Trim('"').Equals(AppConst.Null))
+            {
+                NetManager.HttpDownImageReq(iconControl["uri"], iconImage);
+            }
+        }
+    }
+    
     private void PlayAllNet()
     {
         if (string.IsNullOrEmpty(currentChooseVideoUrl))
         {
-            PanManager.ShowToast("您还没选择视频");
+            PanManager.ShowToast("您还没选择内容");
             return;
         }
 
@@ -116,25 +141,51 @@ public class LobbyPanel : PanelBase
 
     private void PlayLocal()
     {
-        if (currentChooseVideoUrl == null)
+        if (string.IsNullOrEmpty(currentChooseVideoUrl))
         {
-            PanManager.ShowToast("您还没选择视频");
+            PanManager.ShowToast("您还没选择内容");
             return;
         }
-        PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, currentChooseVideoUrl,null);
-//        PanManager.OpenPanel<ImagePlayPanel>(PanelName.ImagePlayPanel, currentChooseVideoUrl,null);
-        currentChooseItem.isOn = false;
-        currentChooseVideoUrl  = null;
-//        PanManager.AllHidenWithout(PanelName.ImagePlayPanel);
-        PanManager.AllHidenWithout(PanelName.VideoPlayPanel);
-    }
 
+        FileType fileType = (FileType) currentChooseFileType;
+        switch (fileType)
+        {
+            case FileType.Picture360:
+                PlayerManager.SetPlayerModel(fileType);
+                PanManager.OpenPanel<ImagePlayPanel>(PanelName.ImagePlayPanel, currentChooseVideoUrl, null);
+                currentChooseItem.isOn = false;
+                currentChooseVideoUrl = null;
+                PanManager.AllHidenWithout(PanelName.ImagePlayPanel);
+                break;
+            case FileType.APP:
+                break;
+            case FileType.Video2D:
+            case FileType.Video3DLR:
+            case FileType.Video1803DTB:
+            case FileType.Video1802D:
+            case FileType.Video3DTB:
+            case FileType.Video1803DLR:
+            case FileType.Video3602D:
+            case FileType.Video3603DLR:
+            case FileType.Video3603DTB:
+                PanManager.OpenPanel<VideoPlayPanel>(PanelName.VideoPlayPanel, currentChooseVideoUrl, null);
+                PlayerManager.SetPlayerModel(fileType);
+                currentChooseItem.isOn = false;
+                currentChooseVideoUrl = null;
+                PanManager.AllHidenWithout(PanelName.VideoPlayPanel);
+                break;
+            default:
+                break;
+        }
+    }
+    
     private void OnClickHomeToggle(bool isOn)
     {
         if (isOn)
         {
             videoRoot.SetActive(true);
             PanManager.ClosePanel(PanelName.ControlPanel);
+            GetDevicesListReq();
         }
     }
 
@@ -153,7 +204,6 @@ public class LobbyPanel : PanelBase
         NetMsgHandler.AddListener(NetMessageConst.StatusEvent, StatusEvent);
         NetMsgHandler.AddListener(NetMessageConst.UpdateAllDeviceInfo, UpdateAllDeviceInfo);
         GetToggleListReq();
-        GetDevicesListReq();
     }
 
     public override void RemoveEvent()
@@ -172,20 +222,22 @@ public class LobbyPanel : PanelBase
 
     private void GetToggleListResp(string msg)
     {
-        Debug.Log("manu GetToggleListResp "+msg);
+        Debug.Log("manu GetToggleListResp " + msg);
         JSONNode jsonNode = JSON.Parse(msg);
-        JSONArray dataArr = jsonNode["data"].AsArray;
-        if (toggleData.Count==0)
-        {
-            for (int i = 0; i < dataArr.Count; i++)
-            {
-                GameObject obj = GameObject.Instantiate(toggleTemp);
-                obj.transform.SetParent(toggleParent,false);
-                obj.transform.localScale = Vector3.one;
-                obj.SetActive(true);
 
-                toggleData.Add(dataArr[i]["id"].AsInt, obj);
-                SetToggleItemDate(obj, i,dataArr[i]);
+        if (jsonNode["code"].AsInt == 0)
+        {
+            JSONArray dataArry = jsonNode["data"].AsArray;
+            togsDG.MaxLength = dataArry.Count;
+            ItemRender[] dgirs = togsDG.getItemRenders();
+            for (int i = 0; i < dgirs.Length; i++)
+            {
+                dgirs[i].AddItemSetDataFunc((int index) =>
+                {
+                    SetToggleItemDate(dgirs[i].gameObj, i, dataArry[index]);
+                });
+                int idx = dgirs[i].m_renderData;
+                SetToggleItemDate(dgirs[i].gameObj, i, dataArry[idx]);
             }
         }
     }
@@ -239,6 +291,12 @@ public class LobbyPanel : PanelBase
                 int idx = dgirs[i].m_renderData;
                 SetTagsItem(dgirs[i].gameObj, i, dataArry[idx]);
             }
+
+            if (dataArry.Count <= 0)
+            {
+                videoDG.Destroy();
+                videoDG.MaxLength = 0;
+            }
         }
         else
         {
@@ -270,6 +328,7 @@ public class LobbyPanel : PanelBase
     void SetVideoItem(string msg)
     {
         Debug.Log("manu SetVideoItem"+msg);
+        currentChooseVideoUrl = string.Empty;
         JSONNode jsonNode = JSON.Parse(msg);
         JSONArray dataArr = jsonNode["data"]["items"].AsArray;
         videoDG.Destroy();
@@ -295,8 +354,9 @@ public class LobbyPanel : PanelBase
             {
                 NetManager.HttpDownImageReq(iconArr["uri"], obj.transform.Find("icon").GetComponent<RawImage>());
             }
-
-            obj.transform.Find("name").GetComponent<Text>().text = json["name"];
+            obj.transform.Find("nameTran/nameAll").gameObject.SetActive(false);
+            obj.transform.Find("nameTran/name").GetComponent<Text>().text = json["name"];
+            obj.transform.Find("nameTran/nameAll").GetComponent<Text>().text = json["name"];
             obj.GetComponent<Toggle>().onValueChanged.RemoveAllListeners();
             obj.GetComponent<Toggle>().onValueChanged.AddListener((bool isOn) =>
             {
@@ -316,6 +376,10 @@ public class LobbyPanel : PanelBase
                     }
                     currentChooseItem = obj.GetComponent<Toggle>();
                 }
+                else
+                {
+                    currentChooseVideoUrl = string.Empty;
+                }
             });
         }
         catch (System.Exception e)  
@@ -326,9 +390,9 @@ public class LobbyPanel : PanelBase
 
     void StatusEvent(string msg)
     {
-//        Debug.Log("manu StatusEvent "+msg);
+        Debug.Log("manu StatusEvent "+msg);
         JSONNode jsonNode   = JSON.Parse(msg);
-        JSONNode userEvents = jsonNode["UserEvents"];
+        JSONNode userEvents = jsonNode["userEvents"];
 
         if (userEvents == null)
         {
@@ -339,12 +403,11 @@ public class LobbyPanel : PanelBase
         greenCount      = 0;
         yellowCount     = 0;
         string num      = userEvents.Count.ToString();
-        openNum.text    = num;
         connectNum.text = num;
         connectCount = 0;
         for (int i = 0; i < userEvents.Count; i++)
         {
-            int powerNum = userEvents[i]["PowerState"].AsInt;
+            int powerNum = userEvents[i]["powerState"].AsInt;
             if (powerNum < 33)
             {
                 redCount++;
@@ -358,7 +421,7 @@ public class LobbyPanel : PanelBase
                 greenCount++;
             }
 
-            if (PlayState.Play.Equals(userEvents[i]["PlayerState"]))
+            if (PlayState.Play.Equals(userEvents[i]["playerState"]))
             {
                 connectCount++;
             }
@@ -400,7 +463,6 @@ public class LobbyPanel : PanelBase
 
     public override void OnDestroy()
     {
-        toggleData.Clear();
         DestroyObject(skin);
         Component.Destroy(this);
     }

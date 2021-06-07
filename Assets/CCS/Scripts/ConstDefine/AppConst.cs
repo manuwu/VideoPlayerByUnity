@@ -21,12 +21,17 @@ namespace CCS
 #endif
         public const string LuaTempDir = "Lua/";                    //临时目录
         
-        public static string WebSocketAdd = "ws://{0}/ccweb/ws/join?sn=admin{1}";
+        public static string WebSocketAdd = string.Empty;
+        public const string WebSocketHost = "ws://{0}/ccweb/ws/join?sn=admin{1}";
         public static string IP = "http://{0}";
         public static string Port = string.Empty;
+        public const string IPSaveKey = "IPSaveKey";
 
         //统一路径符
         public static string dirSep = "/";
         public static char splitSep = '|';
+        public const string Null = "null";
+        public const string EmptyArray = "[]";
+        public const string Http = "http://";
     }
 }
